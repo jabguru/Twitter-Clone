@@ -14,3 +14,8 @@ final appwriteAccountProvider = Provider((ref) {
   final client = ref.watch(appwriteClientProvider);
   return Account(client);
 });
+
+final appWriteDatabaseProvider = Provider((ref) {
+  final client = ref.watch(appwriteClientProvider);
+  return Databases(client);
+});

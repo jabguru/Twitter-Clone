@@ -28,16 +28,36 @@ class AuthAPI implements IAuthAPI {
   AuthAPI({required Account account}) : _account = account;
 
   @override
-  Future<User?> currentUserAccount() {
-    // TODO: implement currentUserAccount
-    throw UnimplementedError();
+  Future<User?> currentUserAccount() async {
+    try {
+      return await _account.get();
+    } on AppwriteException {
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
-  FutureEither<Session> login(
-      {required String email, required String password}) {
-    // TODO: implement login
-    throw UnimplementedError();
+  FutureEither<Session> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final session = await _account.createEmailSession(
+        email: email,
+        password: password,
+      );
+      return right(session);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(
+        Failure(e.message ?? 'Some unexpected error occurred', stackTrace),
+      );
+    } catch (e, stackTrace) {
+      return left(
+        Failure(e.toString(), stackTrace),
+      );
+    }
   }
 
   @override
