@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:twitter_clone/constants/constants.dart';
@@ -13,7 +14,7 @@ final userAPIProvider = Provider((ref) {
 
 abstract class IUserAPI {
   FutureEitherVoid saveUserData(UserModel userModel);
-  // Future<model.Document> getUserData(String uid);
+  Future<Document> getUserData(String uid);
   // Future<List<model.Document>> searchUserByName(String name);
   // FutureEitherVoid updateUserData(UserModel userModel);
   // Stream<RealtimeMessage> getLatestUserProfileData();
@@ -53,14 +54,14 @@ class UserAPI implements IUserAPI {
     }
   }
 
-  // @override
-  // Future<model.Document> getUserData(String uid) {
-  //   return _db.getDocument(
-  //     databaseId: AppwriteConstants.databaseId,
-  //     collectionId: AppwriteConstants.usersCollection,
-  //     documentId: uid,
-  //   );
-  // }
+  @override
+  Future<Document> getUserData(String uid) {
+    return _db.getDocument(
+      databaseId: AppwriteConstants.databaseId,
+      collectionId: AppwriteConstants.usersCollectionId,
+      documentId: uid,
+    );
+  }
 
   // @override
   // Future<List<model.Document>> searchUserByName(String name) async {
