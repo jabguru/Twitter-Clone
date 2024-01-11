@@ -14,6 +14,8 @@ import 'package:twitter_clone/features/tweet/view/twitter_reply_view.dart';
 import 'package:twitter_clone/features/tweet/widgets/carousel_image.dart';
 import 'package:twitter_clone/features/tweet/widgets/hashtag_text.dart';
 import 'package:twitter_clone/features/tweet/widgets/tweet_icon_button.dart';
+import 'package:twitter_clone/features/user_profile/view/user_profile_view.dart';
+import 'package:twitter_clone/features/user_profile/widget/profile_pic_widget.dart';
 // import 'package:twitter_clone/features/user_profile/view/user_profile_view.dart';
 import 'package:twitter_clone/models/tweet_model.dart';
 import 'package:twitter_clone/theme/pallete.dart';
@@ -49,13 +51,13 @@ class TweetCard extends ConsumerWidget {
                             margin: const EdgeInsets.all(10),
                             child: GestureDetector(
                               onTap: () {
-                                // Navigator.push(
-                                //   context,
-                                //   UserProfileView.route(user),
-                                // );
+                                Navigator.push(
+                                  context,
+                                  UserProfileView.route(user),
+                                );
                               },
-                              child: CircleAvatar(
-                                backgroundImage: NetworkImage(user.profilePic),
+                              child: ProfilePicWidget(
+                                profilePic: user.profilePic,
                                 radius: 35,
                               ),
                             ),
@@ -85,15 +87,19 @@ class TweetCard extends ConsumerWidget {
                                   ),
                                 Row(
                                   children: [
-                                    Container(
-                                      margin: EdgeInsets.only(
-                                        right: user.isTwitterBlue ? 1 : 5,
-                                      ),
-                                      child: Text(
-                                        user.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 19,
+                                    Expanded(
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                          right: user.isTwitterBlue ? 1 : 5,
+                                        ),
+                                        child: Text(
+                                          user.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 19,
+                                          ),
                                         ),
                                       ),
                                     ),

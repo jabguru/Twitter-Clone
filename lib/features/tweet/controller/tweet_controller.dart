@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/storage_api.dart';
 import 'package:twitter_clone/apis/tweet_api.dart';
+import 'package:twitter_clone/core/enums/notification_type_enum.dart';
 import 'package:twitter_clone/core/enums/tweet_type_enum.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
+import 'package:twitter_clone/features/notifications/controller/notification_controller.dart';
 import 'package:twitter_clone/models/tweet_model.dart';
 import 'package:twitter_clone/models/user_model.dart';
 
@@ -17,6 +19,7 @@ final tweetControllerProvider =
     ref: ref,
     tweetAPI: ref.watch(tweetAPIProvider),
     storageAPI: ref.watch(storageAPIProvider),
+    notificationController: ref.watch(notificationControllerProvider.notifier),
   );
 });
 
@@ -40,17 +43,25 @@ final getTweetByIdProvider = FutureProvider.family((ref, String id) async {
   return tweetController.getTweetById(id);
 });
 
+final getTweetsByHashtagProvider = FutureProvider.family((ref, String hashtag) {
+  final tweetController = ref.watch(tweetControllerProvider.notifier);
+  return tweetController.getTweetsByHashtag(hashtag);
+});
+
 class TweetController extends StateNotifier<bool> {
   final Ref _ref;
   final TweetAPI _tweetAPI;
   final StorageAPI _storageAPI;
+  final NotificationController _notificationController;
   TweetController({
     required Ref ref,
     required TweetAPI tweetAPI,
     required StorageAPI storageAPI,
+    required NotificationController notificationController,
   })  : _ref = ref,
         _tweetAPI = tweetAPI,
         _storageAPI = storageAPI,
+        _notificationController = notificationController,
         super(false);
 
   Future<List<Tweet>> getTweets() async {
@@ -120,12 +131,12 @@ class TweetController extends StateNotifier<bool> {
       if (repliedToUserId.isNotEmpty) {
         Tweet repliedToTweet = await getTweetById(repliedTo);
         updateTweetCommentsId(repliedToTweet, r.$id);
-        // _notificationController.createNotification(
-        //   text: '${user.name} replied to your tweet!',
-        //   postId: r.$id,
-        //   notificationType: NotificationType.reply,
-        //   uid: repliedToUserId,
-        // );
+        _notificationController.createNotification(
+          text: '${user.name} replied to your tweet!',
+          postId: r.$id,
+          notificationType: NotificationType.reply,
+          uid: repliedToUserId,
+        );
       }
     });
     state = false;
@@ -162,12 +173,12 @@ class TweetController extends StateNotifier<bool> {
       if (repliedToUserId.isNotEmpty) {
         Tweet repliedToTweet = await getTweetById(repliedTo);
         updateTweetCommentsId(repliedToTweet, r.$id);
-        // _notificationController.createNotification(
-        //   text: '${user.name} replied to your tweet!',
-        //   postId: r.$id,
-        //   notificationType: NotificationType.reply,
-        //   uid: repliedToUserId,
-        // );
+        _notificationController.createNotification(
+          text: '${user.name} replied to your tweet!',
+          postId: r.$id,
+          notificationType: NotificationType.reply,
+          uid: repliedToUserId,
+        );
       }
       state = false;
     });
@@ -205,12 +216,12 @@ class TweetController extends StateNotifier<bool> {
       },
     );
     res.fold((l) => null, (r) {
-      // _notificationController.createNotification(
-      //   text: '${user.name} liked your tweet!',
-      //   postId: tweet.id,
-      //   notificationType: NotificationType.like,
-      //   uid: tweet.uid,
-      // );
+      _notificationController.createNotification(
+        text: '${user.name} liked your tweet!',
+        postId: tweet.id,
+        notificationType: NotificationType.like,
+        uid: tweet.uid,
+      );
     });
   }
 
@@ -233,14 +244,7 @@ class TweetController extends StateNotifier<bool> {
         'commentIds': tweet.commentIds,
       },
     );
-    res.fold((l) => null, (r) {
-      // _notificationController.createNotification(
-      //   text: '${user.name} liked your tweet!',
-      //   postId: tweet.id,
-      //   notificationType: NotificationType.like,
-      //   uid: tweet.uid,
-      // );
-    });
+    res.fold((l) => null, (r) => null);
   }
 
   void reshareTweet(
@@ -273,12 +277,12 @@ class TweetController extends StateNotifier<bool> {
         res2.fold(
           (l) => showSnackBar(context, l.message),
           (r) {
-            // _notificationController.createNotification(
-            //   text: '${currentUser.name} reshared your tweet!',
-            //   postId: tweet.id,
-            //   notificationType: NotificationType.retweet,
-            //   uid: tweet.uid,
-            // );
+            _notificationController.createNotification(
+              text: '${currentUser.name} reshared your tweet!',
+              postId: tweet.id,
+              notificationType: NotificationType.retweet,
+              uid: tweet.uid,
+            );
             showSnackBar(context, 'Retweeted!');
           },
         );
@@ -294,5 +298,10 @@ class TweetController extends StateNotifier<bool> {
   Future<Tweet> getTweetById(String id) async {
     final tweet = await _tweetAPI.getTweetById(id);
     return Tweet.fromMap(tweet.data);
+  }
+
+  Future<List<Tweet>> getTweetsByHashtag(String hashtag) async {
+    final documents = await _tweetAPI.getTweetsByHashtag(hashtag);
+    return documents.map((tweet) => Tweet.fromMap(tweet.data)).toList();
   }
 }

@@ -9,6 +9,7 @@ import 'package:twitter_clone/constants/constants.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
 import 'package:twitter_clone/features/tweet/controller/tweet_controller.dart';
+import 'package:twitter_clone/features/user_profile/widget/profile_pic_widget.dart';
 import 'package:twitter_clone/theme/pallete.dart';
 
 class CreateTweetView extends ConsumerStatefulWidget {
@@ -78,8 +79,8 @@ class _CreateTweetViewState extends ConsumerState<CreateTweetView> {
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(currentUser.profilePic),
+                        ProfilePicWidget(
+                          profilePic: currentUser.profilePic,
                           radius: 30,
                         ),
                         const SizedBox(width: 15),

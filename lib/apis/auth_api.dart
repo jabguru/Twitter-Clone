@@ -61,9 +61,21 @@ class AuthAPI implements IAuthAPI {
   }
 
   @override
-  FutureEitherVoid logout() {
-    // TODO: implement logout
-    throw UnimplementedError();
+  FutureEitherVoid logout() async {
+    try {
+      await _account.deleteSession(
+        sessionId: 'current',
+      );
+      return right(null);
+    } on AppwriteException catch (e, stackTrace) {
+      return left(
+        Failure(e.message ?? 'Some unexpected error occurred', stackTrace),
+      );
+    } catch (e, stackTrace) {
+      return left(
+        Failure(e.toString(), stackTrace),
+      );
+    }
   }
 
   @override
