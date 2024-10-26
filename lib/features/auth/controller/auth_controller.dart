@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/auth_api.dart';
+import 'package:twitter_clone/core/error/handler.dart';
 import 'package:twitter_clone/core/utils.dart';
+import 'package:twitter_clone/features/auth/view/login_view.dart';
 import 'package:twitter_clone/features/auth/view/signup_view.dart';
 import 'package:twitter_clone/features/home/view/home_view.dart';
 import 'package:twitter_clone/models/user_model.dart';
@@ -55,29 +57,10 @@ class AuthController extends StateNotifier<bool> {
     );
     state = false;
     res.fold(
-      // (l) => showSnackBar(context, l.message),
-      (l) => showSnackBar(context, 'l.message'),
+      (l) => showSnackBar(context, getFailureMessage(l)),
       (r) async {
-        // UserModel userModel = UserModel(
-        //   email: email,
-        //   name: getNameFromEmail(email),
-        //   followers: const [],
-        //   following: const [],
-        //   profilePic: '',
-        //   bannerPic: '',
-        //   uid: r.$id,
-        //   bio: '',
-        //   isTwitterBlue: false,
-        // );
-        // final created = await _userAPI.saveUserData(userModel);
-
-        // created.fold(
-        //   (l) => showSnackBar(context, l.message),
-        //   (r) {
-        //     showSnackBar(context, 'Account created! Please login.');
-        //     Navigator.push(context, LoginView.route());
-        //   },
-        // );
+        showSnackBar(context, 'Account created! Please login.');
+        Navigator.push(context, LoginView.route());
       },
     );
   }
@@ -94,8 +77,7 @@ class AuthController extends StateNotifier<bool> {
     );
     state = false;
     res.fold(
-      (l) => showSnackBar(context, 'l.message'),
-      // (l) => showSnackBar(context, l.message),
+      (l) => showSnackBar(context, getFailureMessage(l)),
       (r) {
         Navigator.push(context, HomeView.route());
       },

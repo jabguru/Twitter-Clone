@@ -1,158 +1,53 @@
-// import 'package:appwrite/appwrite.dart';
-// import 'package:appwrite/models.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:fpdart/fpdart.dart';
-// import 'package:twitter_clone/constants/constants.dart';
-// import 'package:twitter_clone/core/core.dart';
-// import 'package:twitter_clone/core/providers.dart';
-// import 'package:twitter_clone/models/user_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:twitter_clone/apis/datasource/user_datasource.dart';
+import 'package:twitter_clone/core/core.dart';
+import 'package:twitter_clone/core/error/handler.dart';
+import 'package:twitter_clone/models/user_model.dart';
 
-// final userAPIProvider = Provider((ref) {
-//   Databases db = ref.watch(appWriteDatabaseProvider);
-//   Realtime realtime = ref.watch(appwriteRealtimeProvider('Users'));
-//   return UserAPI(
-//     db: db,
-//     realtime: realtime,
-//   );
-// });
+final userAPIProvider = Provider(
+  (ref) {
+    final userDatasource = ref.watch(userDatasourceProvider);
+    return UserAPI(
+      userDatasource: userDatasource,
+    );
+  },
+);
 
-// abstract class IUserAPI {
-//   FutureEitherVoid saveUserData(UserModel userModel);
-//   Future<Document> getUserData(String uid);
-//   Future<List<Document>> searchUserByName(String name);
-//   FutureEitherVoid updateUserData(UserModel userModel);
-//   Stream<RealtimeMessage> getLatestUserProfileData();
-//   FutureEitherVoid followUser(UserModel user);
-//   FutureEitherVoid addToFollowing(UserModel user);
-// }
+abstract class IUserAPI {
+  FutureEitherVoid saveUserData(UserModel userModel);
+  FutureEither<UserModel> getUserData(int id);
+  FutureEither<List<UserModel>> searchUserByName(String name);
+  // Stream<RealtimeMessage> getLatestUserProfileData();
+}
 
-// class UserAPI implements IUserAPI {
-//   final Databases _db;
-//   final Realtime _realtime;
-//   UserAPI({
-//     required Databases db,
-//     required Realtime realtime,
-//   })  : _realtime = realtime,
-//         _db = db;
+class UserAPI implements IUserAPI {
+  final UserDatasource _userDatasource;
 
-//   @override
-//   FutureEitherVoid saveUserData(UserModel userModel) async {
-//     try {
-//       await _db.createDocument(
-//         databaseId: AppwriteConstants.databaseId,
-//         collectionId: AppwriteConstants.usersCollectionId,
-//         documentId: userModel.uid,
-//         data: userModel.toMap(),
-//       );
-//       return right(null);
-//     } on AppwriteException catch (e, st) {
-//       return left(
-//         Failure(
-//           e.message ?? 'Some unexpected error occurred',
-//           st,
-//         ),
-//       );
-//     } catch (e, st) {
-//       return left(Failure(e.toString(), st));
-//     }
-//   }
+  UserAPI({
+    required UserDatasource userDatasource,
+  }) : _userDatasource = userDatasource;
 
-//   @override
-//   Future<Document> getUserData(String uid) {
-//     return _db.getDocument(
-//       databaseId: AppwriteConstants.databaseId,
-//       collectionId: AppwriteConstants.usersCollectionId,
-//       documentId: uid,
-//     );
-//   }
+  @override
+  FutureEither<UserModel> getUserData(int id) async {
+    return await handleError(() async {
+      Map<String, dynamic> userMap = await _userDatasource.getUserData(id);
+      return UserModel.fromMap(userMap);
+    });
+  }
 
-//   @override
-//   Future<List<Document>> searchUserByName(String name) async {
-//     final documents = await _db.listDocuments(
-//       databaseId: AppwriteConstants.databaseId,
-//       collectionId: AppwriteConstants.usersCollectionId,
-//       queries: [
-//         Query.search('name', name),
-//       ],
-//     );
+  @override
+  FutureEitherVoid saveUserData(UserModel userModel) async {
+    return await handleError(() async {
+      await _userDatasource.saveUserData(userModel.toMap());
+    });
+  }
 
-//     return documents.documents;
-//   }
-
-//   @override
-//   FutureEitherVoid updateUserData(UserModel userModel) async {
-//     try {
-//       await _db.updateDocument(
-//         databaseId: AppwriteConstants.databaseId,
-//         collectionId: AppwriteConstants.usersCollectionId,
-//         documentId: userModel.uid,
-//         data: userModel.toMap(),
-//       );
-//       return right(null);
-//     } on AppwriteException catch (e, st) {
-//       return left(
-//         Failure(
-//           e.message ?? 'Some unexpected error occurred',
-//           st,
-//         ),
-//       );
-//     } catch (e, st) {
-//       return left(Failure(e.toString(), st));
-//     }
-//   }
-
-//   @override
-//   Stream<RealtimeMessage> getLatestUserProfileData() {
-//     return _realtime.subscribe([
-//       'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.usersCollectionId}.documents'
-//     ]).stream;
-//   }
-
-//   @override
-//   FutureEitherVoid followUser(UserModel user) async {
-//     try {
-//       await _db.updateDocument(
-//         databaseId: AppwriteConstants.databaseId,
-//         collectionId: AppwriteConstants.usersCollectionId,
-//         documentId: user.uid,
-//         data: {
-//           'followers': user.followers,
-//         },
-//       );
-//       return right(null);
-//     } on AppwriteException catch (e, st) {
-//       return left(
-//         Failure(
-//           e.message ?? 'Some unexpected error occurred',
-//           st,
-//         ),
-//       );
-//     } catch (e, st) {
-//       return left(Failure(e.toString(), st));
-//     }
-//   }
-
-//   @override
-//   FutureEitherVoid addToFollowing(UserModel user) async {
-//     try {
-//       await _db.updateDocument(
-//         databaseId: AppwriteConstants.databaseId,
-//         collectionId: AppwriteConstants.usersCollectionId,
-//         documentId: user.uid,
-//         data: {
-//           'following': user.following,
-//         },
-//       );
-//       return right(null);
-//     } on AppwriteException catch (e, st) {
-//       return left(
-//         Failure(
-//           e.message ?? 'Some unexpected error occurred',
-//           st,
-//         ),
-//       );
-//     } catch (e, st) {
-//       return left(Failure(e.toString(), st));
-//     }
-//   }
-// }
+  @override
+  FutureEither<List<UserModel>> searchUserByName(String name) async {
+    return await handleError(() async {
+      List<Map<String, dynamic>> userMap =
+          await _userDatasource.searchUserByName(name);
+      return userMap.map((e) => UserModel.fromMap(e)).toList();
+    });
+  }
+}

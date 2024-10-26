@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:twitter_clone/apis/app_storage.dart';
+import 'package:twitter_clone/core/networking/custom_dio_logger.dart';
+import 'package:twitter_clone/core/networking/token_refresh_interceptor.dart';
 
 final storageProvider = Provider((ref) {
   FlutterSecureStorage secureStorage = const FlutterSecureStorage(
@@ -14,5 +16,13 @@ final storageProvider = Provider((ref) {
 });
 
 final dioProvider = Provider((ref) {
-  return Dio();
+  Dio dio = Dio();
+  dio.interceptors.add(
+    TokenRefreshInterceptor(
+      dio: dio,
+      appStorage: ref.watch(storageProvider),
+    ),
+  );
+  dio.interceptors.add(DioLogger());
+  return dio;
 });

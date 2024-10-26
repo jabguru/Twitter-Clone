@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:twitter_clone/constants/Urls.dart';
 import 'package:twitter_clone/core/error/exceptions.dart';
+import 'package:twitter_clone/core/networking/urls.dart';
 import 'package:twitter_clone/core/providers.dart';
 
 final authDatasourceProvider = Provider((ref) {
@@ -34,7 +34,7 @@ class AuthDatasource implements IAuthDatasource {
     required String password,
   }) async {
     final Response res = await _dio.post(
-      AppUrls.login,
+      Endpoints.login,
       data: {
         'email': email,
         'password': password,
@@ -54,7 +54,7 @@ class AuthDatasource implements IAuthDatasource {
     required String password,
   }) async {
     final Response res = await _dio.post(
-      AppUrls.register,
+      Endpoints.register,
       data: {
         'email': email,
         'password': password,

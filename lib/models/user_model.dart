@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 class UserModel {
   final String email;
   final String name;
-  final List<String> followers;
-  final List<String> following;
+  final List<int> followers;
+  final List<int> following;
   final String profilePic;
   final String bannerPic;
   final String uid;
@@ -26,8 +26,8 @@ class UserModel {
   UserModel copyWith({
     String? email,
     String? name,
-    List<String>? followers,
-    List<String>? following,
+    List<int>? followers,
+    List<int>? following,
     String? profilePic,
     String? bannerPic,
     String? uid,
@@ -66,8 +66,8 @@ class UserModel {
     return UserModel(
       email: map['email'] ?? '',
       name: map['name'] ?? '',
-      followers: List<String>.from(map['followers']),
-      following: List<String>.from(map['following']),
+      followers: List<int>.from(map['followers']),
+      following: List<int>.from(map['following']),
       profilePic: map['profilePic'] ?? '',
       bannerPic: map['bannerPic'] ?? '',
       uid: map['\$id'] ?? '',

@@ -58,6 +58,13 @@ class AuthAPI implements IAuthAPI {
     return await handleError(() async {
       Map res = await _authDatasource.login(email: email, password: password);
 
+      // save usertoken
+      _appStorage.saveAccessToken(res['accessToken']);
+      _appStorage.saveRefreshToken(res['refreshToken']);
+
+      // save userdetails
+      _appStorage.saveUser(res['user']);
+
       return true;
     });
   }
