@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/common/loading_page.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
-import 'package:twitter_clone/features/user_profile/controller/user_profile_controller.dart';
 import 'package:twitter_clone/features/user_profile/widget/profile_pic_widget.dart';
 import 'package:twitter_clone/theme/theme.dart';
 
@@ -65,7 +64,8 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserDetailsProvider).value;
-    final isLoading = ref.watch(userProfileControllerProvider);
+    // final isLoading = ref.watch(userProfileControllerProvider);
+    const isLoading = true;
 
     return Scaffold(
       appBar: AppBar(
@@ -74,17 +74,17 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
         actions: [
           TextButton(
             onPressed: () {
-              ref
-                  .read(userProfileControllerProvider.notifier)
-                  .updateUserProfile(
-                    userModel: user!.copyWith(
-                      bio: bioController.text,
-                      name: nameController.text,
-                    ),
-                    context: context,
-                    bannerFile: bannerFile,
-                    profileFile: profileFile,
-                  );
+              // ref
+              //     .read(userProfileControllerProvider.notifier)
+              //     .updateUserProfile(
+              //       userModel: user!.copyWith(
+              //         bio: bioController.text,
+              //         name: nameController.text,
+              //       ),
+              //       context: context,
+              //       bannerFile: bannerFile,
+              //       profileFile: profileFile,
+              //     );
             },
             child: const Text('Save'),
           ),

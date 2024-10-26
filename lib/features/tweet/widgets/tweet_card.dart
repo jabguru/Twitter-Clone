@@ -8,7 +8,6 @@ import 'package:twitter_clone/common/common.dart';
 import 'package:twitter_clone/constants/assets_constants.dart';
 import 'package:twitter_clone/core/enums/tweet_type_enum.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
-import 'package:twitter_clone/features/tweet/controller/tweet_controller.dart';
 import 'package:twitter_clone/features/tweet/view/twitter_reply_view.dart';
 // import 'package:twitter_clone/features/tweet/views/twitter_reply_view.dart';
 import 'package:twitter_clone/features/tweet/widgets/carousel_image.dart';
@@ -123,44 +122,44 @@ class TweetCard extends ConsumerWidget {
                                     ),
                                   ],
                                 ),
-                                if (tweet.repliedTo.isNotEmpty)
-                                  ref
-                                      .watch(
-                                          getTweetByIdProvider(tweet.repliedTo))
-                                      .when(
-                                        data: (repliedToTweet) {
-                                          final replyingToUser = ref
-                                              .watch(
-                                                userDetailsProvider(
-                                                  repliedToTweet.uid,
-                                                ),
-                                              )
-                                              .value;
-                                          return RichText(
-                                            text: TextSpan(
-                                              text: 'Replying to',
-                                              style: const TextStyle(
-                                                color: Pallete.greyColor,
-                                                fontSize: 16,
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  text:
-                                                      ' @${replyingToUser?.name}',
-                                                  style: const TextStyle(
-                                                    color: Pallete.blueColor,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                        error: (error, st) => ErrorText(
-                                          error: error.toString(),
-                                        ),
-                                        loading: () => const SizedBox(),
-                                      ),
+                                // if (tweet.repliedTo.isNotEmpty)
+                                //   ref
+                                //       .watch(
+                                //           getTweetByIdProvider(tweet.repliedTo))
+                                //       .when(
+                                //         data: (repliedToTweet) {
+                                //           final replyingToUser = ref
+                                //               .watch(
+                                //                 userDetailsProvider(
+                                //                   repliedToTweet.uid,
+                                //                 ),
+                                //               )
+                                //               .value;
+                                //           return RichText(
+                                //             text: TextSpan(
+                                //               text: 'Replying to',
+                                //               style: const TextStyle(
+                                //                 color: Pallete.greyColor,
+                                //                 fontSize: 16,
+                                //               ),
+                                //               children: [
+                                //                 TextSpan(
+                                //                   text:
+                                //                       ' @${replyingToUser?.name}',
+                                //                   style: const TextStyle(
+                                //                     color: Pallete.blueColor,
+                                //                     fontSize: 16,
+                                //                   ),
+                                //                 ),
+                                //               ],
+                                //             ),
+                                //           );
+                                //         },
+                                //         error: (error, st) => ErrorText(
+                                //           error: error.toString(),
+                                //         ),
+                                //         loading: () => const SizedBox(),
+                                //       ),
                                 HashtagText(text: tweet.text),
                                 if (tweet.tweetType == TweetType.image)
                                   CarouselImage(imageLinks: tweet.imageLinks),
@@ -199,26 +198,26 @@ class TweetCard extends ConsumerWidget {
                                         pathName: AssetsConstants.retweetIcon,
                                         text: tweet.reshareCount.toString(),
                                         onTap: () {
-                                          ref
-                                              .read(tweetControllerProvider
-                                                  .notifier)
-                                              .reshareTweet(
-                                                tweet,
-                                                currentUser,
-                                                context,
-                                              );
+                                          // ref
+                                          //     .read(tweetControllerProvider
+                                          //         .notifier)
+                                          //     .reshareTweet(
+                                          //       tweet,
+                                          //       currentUser,
+                                          //       context,
+                                          //     );
                                         },
                                       ),
                                       LikeButton(
                                         size: 25,
                                         onTap: (isLiked) async {
-                                          ref
-                                              .read(tweetControllerProvider
-                                                  .notifier)
-                                              .likeTweet(
-                                                tweet,
-                                                currentUser,
-                                              );
+                                          // ref
+                                          //     .read(tweetControllerProvider
+                                          //         .notifier)
+                                          //     .likeTweet(
+                                          //       tweet,
+                                          //       currentUser,
+                                          //     );
                                           return !isLiked;
                                         },
                                         isLiked: tweet.likes
