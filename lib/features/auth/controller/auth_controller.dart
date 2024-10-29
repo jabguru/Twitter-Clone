@@ -19,7 +19,8 @@ final authControllerProvider =
 });
 
 final currentUserDetailsProvider = FutureProvider((ref) {
-  final currentUserId = ref.watch(currentUserAccountProvider).value!.id;
+  final currentUserId = ref.watch(currentUserAccountProvider).value?.id;
+  if (currentUserId == null) return null;
   final userDetails = ref.watch(userDetailsProvider(currentUserId));
   return userDetails.value;
 });

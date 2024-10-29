@@ -79,7 +79,7 @@ class TokenInterceptor extends QueuedInterceptorsWrapper {
       final Response res = await dio.post(
         Endpoints.refreshToken,
         data: {
-          'token': _refreshToken,
+          'refreshToken': _refreshToken,
         },
       );
 
