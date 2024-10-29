@@ -39,12 +39,14 @@ class AppStorage implements IAppStorage {
 
   @override
   Future<void> saveUser(Map value) async {
+    print("Saved User: $value");
     return await secureStorage.write(key: "USER", value: jsonEncode(value));
   }
 
   @override
   Future<UserModel?> getUser() async {
     // await secureStorage.deleteAll();
+    print("Getting User");
     String? userString = await secureStorage.read(key: "USER");
     if (userString != null) {
       Map<String, dynamic> userMap = jsonDecode(userString);

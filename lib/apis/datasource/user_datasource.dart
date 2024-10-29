@@ -29,7 +29,7 @@ class UserDatasource implements IUserDatasource {
     );
 
     if (res.statusCode == 200) {
-      return res.data;
+      return Map<String, dynamic>.from(res.data);
     }
 
     throw ServerException();
@@ -56,7 +56,7 @@ class UserDatasource implements IUserDatasource {
     );
 
     if (res.statusCode == 200) {
-      return res.data;
+      return List<Map<String, dynamic>>.from(res.data);
     }
 
     throw ServerException();

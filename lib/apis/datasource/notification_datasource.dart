@@ -43,7 +43,7 @@ class NotificationDatasource implements INotificationDatasource {
     );
 
     if (res.statusCode == 200) {
-      return res.data;
+      return List<Map<String, dynamic>>.from(res.data);
     }
 
     throw ServerException();

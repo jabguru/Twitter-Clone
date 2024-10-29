@@ -10,7 +10,7 @@ final tweetDatasourceProvider = Provider((ref) {
 });
 
 abstract class ITweetDatasource {
-  Future<void> shareTweet({
+  Future<Map<String, dynamic>> shareTweet({
     required int userId,
     required Map<String, dynamic> tweet,
   });
@@ -40,7 +40,7 @@ class TweetDatasource implements ITweetDatasource {
     );
 
     if (res.statusCode == 200) {
-      return res.data;
+      return List<Map<String, dynamic>>.from(res.data);
     }
 
     throw ServerException();
@@ -53,7 +53,7 @@ class TweetDatasource implements ITweetDatasource {
     );
 
     if (res.statusCode == 200) {
-      return res.data;
+      return Map<String, dynamic>.from(res.data);
     }
 
     throw ServerException();
@@ -82,7 +82,7 @@ class TweetDatasource implements ITweetDatasource {
     );
 
     if (res.statusCode == 200) {
-      return res.data;
+      return List<Map<String, dynamic>>.from(res.data);
     }
 
     throw ServerException();
@@ -95,7 +95,7 @@ class TweetDatasource implements ITweetDatasource {
     );
 
     if (res.statusCode == 200) {
-      return res.data;
+      return List<Map<String, dynamic>>.from(res.data);
     }
 
     throw ServerException();
@@ -113,7 +113,7 @@ class TweetDatasource implements ITweetDatasource {
     );
 
     if (res.statusCode == 201) {
-      return res.data;
+      return Map<String, dynamic>.from(res.data);
     }
 
     throw ServerException();
