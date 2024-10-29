@@ -44,6 +44,7 @@ class AppStorage implements IAppStorage {
 
   @override
   Future<UserModel?> getUser() async {
+    // await secureStorage.deleteAll();
     String? userString = await secureStorage.read(key: "USER");
     if (userString != null) {
       Map<String, dynamic> userMap = jsonDecode(userString);

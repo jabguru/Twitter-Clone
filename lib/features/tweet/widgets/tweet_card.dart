@@ -8,6 +8,7 @@ import 'package:twitter_clone/common/common.dart';
 import 'package:twitter_clone/constants/assets_constants.dart';
 import 'package:twitter_clone/core/enums/tweet_type_enum.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
+import 'package:twitter_clone/features/tweet/controller/tweet_controller.dart';
 import 'package:twitter_clone/features/tweet/view/twitter_reply_view.dart';
 // import 'package:twitter_clone/features/tweet/views/twitter_reply_view.dart';
 import 'package:twitter_clone/features/tweet/widgets/carousel_image.dart';
@@ -32,7 +33,7 @@ class TweetCard extends ConsumerWidget {
 
     return currentUser == null
         ? const SizedBox()
-        : ref.watch(userDetailsProvider(tweet.uid)).when(
+        : ref.watch(userDetailsProvider(tweet.user.id)).when(
               data: (user) {
                 return GestureDetector(
                   onTap: () {
@@ -56,7 +57,7 @@ class TweetCard extends ConsumerWidget {
                                 );
                               },
                               child: ProfilePicWidget(
-                                profilePic: user.profilePic,
+                                profilePic: user!.profilePic,
                                 radius: 35,
                               ),
                             ),
@@ -65,7 +66,8 @@ class TweetCard extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (tweet.retweetedBy.isNotEmpty)
+                                if (tweet.retweetedBy != null &&
+                                    tweet.retweetedBy!.isNotEmpty)
                                   Row(
                                     children: [
                                       SvgPicture.asset(
@@ -122,44 +124,44 @@ class TweetCard extends ConsumerWidget {
                                     ),
                                   ],
                                 ),
-                                // if (tweet.repliedTo.isNotEmpty)
-                                //   ref
-                                //       .watch(
-                                //           getTweetByIdProvider(tweet.repliedTo))
-                                //       .when(
-                                //         data: (repliedToTweet) {
-                                //           final replyingToUser = ref
-                                //               .watch(
-                                //                 userDetailsProvider(
-                                //                   repliedToTweet.uid,
-                                //                 ),
-                                //               )
-                                //               .value;
-                                //           return RichText(
-                                //             text: TextSpan(
-                                //               text: 'Replying to',
-                                //               style: const TextStyle(
-                                //                 color: Pallete.greyColor,
-                                //                 fontSize: 16,
-                                //               ),
-                                //               children: [
-                                //                 TextSpan(
-                                //                   text:
-                                //                       ' @${replyingToUser?.name}',
-                                //                   style: const TextStyle(
-                                //                     color: Pallete.blueColor,
-                                //                     fontSize: 16,
-                                //                   ),
-                                //                 ),
-                                //               ],
-                                //             ),
-                                //           );
-                                //         },
-                                //         error: (error, st) => ErrorText(
-                                //           error: error.toString(),
-                                //         ),
-                                //         loading: () => const SizedBox(),
-                                //       ),
+                                if (tweet.repliedTo != null)
+                                  ref
+                                      .watch(getTweetByIdProvider(
+                                          tweet.repliedTo!))
+                                      .when(
+                                        data: (repliedToTweet) {
+                                          final replyingToUser = ref
+                                              .watch(
+                                                userDetailsProvider(
+                                                  repliedToTweet!.user.id,
+                                                ),
+                                              )
+                                              .value;
+                                          return RichText(
+                                            text: TextSpan(
+                                              text: 'Replying to',
+                                              style: const TextStyle(
+                                                color: Pallete.greyColor,
+                                                fontSize: 16,
+                                              ),
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      ' @${replyingToUser?.name}',
+                                                  style: const TextStyle(
+                                                    color: Pallete.blueColor,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                        error: (error, st) => ErrorText(
+                                          error: error.toString(),
+                                        ),
+                                        loading: () => const SizedBox(),
+                                      ),
                                 HashtagText(text: tweet.text),
                                 if (tweet.tweetType == TweetType.image)
                                   CarouselImage(imageLinks: tweet.imageLinks),
@@ -198,30 +200,30 @@ class TweetCard extends ConsumerWidget {
                                         pathName: AssetsConstants.retweetIcon,
                                         text: tweet.reshareCount.toString(),
                                         onTap: () {
-                                          // ref
-                                          //     .read(tweetControllerProvider
-                                          //         .notifier)
-                                          //     .reshareTweet(
-                                          //       tweet,
-                                          //       currentUser,
-                                          //       context,
-                                          //     );
+                                          ref
+                                              .read(tweetControllerProvider
+                                                  .notifier)
+                                              .reshareTweet(
+                                                tweet,
+                                                currentUser,
+                                                context,
+                                              );
                                         },
                                       ),
                                       LikeButton(
                                         size: 25,
                                         onTap: (isLiked) async {
-                                          // ref
-                                          //     .read(tweetControllerProvider
-                                          //         .notifier)
-                                          //     .likeTweet(
-                                          //       tweet,
-                                          //       currentUser,
-                                          //     );
+                                          ref
+                                              .read(tweetControllerProvider
+                                                  .notifier)
+                                              .likeTweet(
+                                                tweet,
+                                                currentUser,
+                                              );
                                           return !isLiked;
                                         },
                                         isLiked: tweet.likes
-                                            .contains(currentUser.uid),
+                                            .contains(currentUser.id),
                                         likeBuilder: (isLiked) {
                                           return isLiked
                                               ? SvgPicture.asset(

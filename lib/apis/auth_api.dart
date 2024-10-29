@@ -5,6 +5,7 @@ import 'package:twitter_clone/apis/datasource/auth_datasource.dart';
 import 'package:twitter_clone/core/core.dart';
 import 'package:twitter_clone/core/error/handler.dart';
 import 'package:twitter_clone/core/providers.dart';
+import 'package:twitter_clone/models/user_model.dart';
 
 final authAPIProvider = Provider(
   (ref) {
@@ -26,7 +27,7 @@ abstract class IAuthAPI {
     required String email,
     required String password,
   });
-  // Future<User?> currentUserAccount();
+  Future<UserModel?> currentUserAccount();
   FutureEitherVoid logout();
 }
 
@@ -39,16 +40,14 @@ class AuthAPI implements IAuthAPI {
   })  : _appStorage = appStorage,
         _authDatasource = authDatasource;
 
-  // @override
-  // Future<User?> currentUserAccount() async {
-  //   try {
-  //     return await _account.get();
-  //   } on AppwriteException {
-  //     return null;
-  //   } catch (e) {
-  //     return null;
-  //   }
-  // }
+  @override
+  Future<UserModel?> currentUserAccount() async {
+    try {
+      return await _appStorage.getUser();
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   FutureEither<bool> login({

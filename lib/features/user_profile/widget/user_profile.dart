@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:twitter_clone/common/error_page.dart';
 import 'package:twitter_clone/common/loading_page.dart';
 import 'package:twitter_clone/constants/constants.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
+import 'package:twitter_clone/features/tweet/widgets/tweet_card.dart';
+import 'package:twitter_clone/features/user_profile/controller/user_profile_controller.dart';
 import 'package:twitter_clone/features/user_profile/view/edit_profile_view.dart';
 import 'package:twitter_clone/features/user_profile/widget/follow_count.dart';
 import 'package:twitter_clone/features/user_profile/widget/profile_pic_widget.dart';
@@ -54,17 +57,17 @@ class UserProfile extends ConsumerWidget {
                         margin: const EdgeInsets.all(20),
                         child: OutlinedButton(
                           onPressed: () {
-                            if (currentUser.uid == user.uid) {
+                            if (currentUser.id == user.id) {
                               // edit profile
                               Navigator.push(context, EditProfileView.route());
                             } else {
-                              // ref
-                              //     .read(userProfileControllerProvider.notifier)
-                              //     .followUser(
-                              //       user: user,
-                              //       context: context,
-                              //       currentUser: currentUser,
-                              //     );
+                              ref
+                                  .read(userProfileControllerProvider.notifier)
+                                  .followUser(
+                                    user: user,
+                                    context: context,
+                                    currentUser: currentUser,
+                                  );
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -77,9 +80,9 @@ class UserProfile extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 25),
                           ),
                           child: Text(
-                            currentUser.uid == user.uid
+                            currentUser.id == user.id
                                 ? 'Edit Profile'
-                                : currentUser.following.contains(user.uid)
+                                : currentUser.following.contains(user.id)
                                     ? 'Unfollow'
                                     : 'Follow',
                             style: const TextStyle(
@@ -149,24 +152,23 @@ class UserProfile extends ConsumerWidget {
                 ),
               ];
             },
-            body: const SizedBox.shrink()
-            // ref.watch(getUserTweetsProvider(user.uid)).when(
-            //       data: (tweets) {
-            //         // can make it realtime by copying code
-            //         // from twitter_reply_view
-            //         return ListView.builder(
-            //           itemCount: tweets.length,
-            //           itemBuilder: (BuildContext context, int index) {
-            //             final tweet = tweets[index];
-            //             return TweetCard(tweet: tweet);
-            //           },
-            //         );
-            //       },
-            //       error: (error, st) => ErrorText(
-            //         error: error.toString(),
-            //       ),
-            //       loading: () => const Loader(),
-            //     ),
-            );
+            body: ref.watch(getUserTweetsProvider(user.id)).when(
+                  data: (tweets) {
+                    // can make it realtime by copying code
+                    // from twitter_reply_view
+                    return ListView.builder(
+                      itemCount: tweets.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final tweet = tweets[index];
+                        return TweetCard(tweet: tweet);
+                      },
+                    );
+                  },
+                  error: (error, st) => ErrorText(
+                    error: error.toString(),
+                  ),
+                  loading: () => const Loader(),
+                ),
+          );
   }
 }

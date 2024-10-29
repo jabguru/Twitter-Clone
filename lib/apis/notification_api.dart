@@ -1,70 +1,46 @@
-// import 'package:appwrite/appwrite.dart';
-// import 'package:appwrite/models.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:fpdart/fpdart.dart';
-// import 'package:twitter_clone/constants/constants.dart';
-// import 'package:twitter_clone/core/core.dart';
-// import 'package:twitter_clone/core/providers.dart';
-// import 'package:twitter_clone/models/notification_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:twitter_clone/apis/datasource/notification_datasource.dart';
+import 'package:twitter_clone/core/core.dart';
+import 'package:twitter_clone/core/error/handler.dart';
+import 'package:twitter_clone/models/notification_model.dart';
 
-// final notificationAPIProvider = Provider((ref) {
-//   return NotificationAPI(
-//     db: ref.watch(appWriteDatabaseProvider),
-//     realtime: ref.watch(appwriteRealtimeProvider('Notifications')),
-//   );
-// });
+final notificationAPIProvider = Provider((ref) {
+  return NotificationAPI(
+    notificationDatasource: ref.watch(notificationDatasourceProvider),
+  );
+});
 
-// abstract class INotificationAPI {
-//   FutureEitherVoid createNotification(Notification notification);
-//   Future<List<Document>> getNotifications(String uid);
-//   Stream<RealtimeMessage> getLatestNotification();
-// }
+abstract class INotificationAPI {
+  FutureEitherVoid createNotification(Map<String, dynamic> notification);
+  FutureEither<List<Notification>> getNotifications(int uid);
+  // Stream<RealtimeMessage> getLatestNotification();
+}
 
-// class NotificationAPI implements INotificationAPI {
-//   final Databases _db;
-//   final Realtime _realtime;
-//   NotificationAPI({required Databases db, required Realtime realtime})
-//       : _realtime = realtime,
-//         _db = db;
+class NotificationAPI implements INotificationAPI {
+  final NotificationDatasource _notificationDatasource;
+  NotificationAPI({required NotificationDatasource notificationDatasource})
+      : _notificationDatasource = notificationDatasource;
 
-//   @override
-//   FutureEitherVoid createNotification(Notification notification) async {
-//     try {
-//       await _db.createDocument(
-//         databaseId: AppwriteConstants.databaseId,
-//         collectionId: AppwriteConstants.notificationsCollectionId,
-//         documentId: ID.unique(),
-//         data: notification.toMap(),
-//       );
-//       return right(null);
-//     } on AppwriteException catch (e, st) {
-//       return left(
-//         Failure(
-//           e.message ?? 'Some unexpected error occurred',
-//           st,
-//         ),
-//       );
-//     } catch (e, st) {
-//       return left(Failure(e.toString(), st));
-//     }
-//   }
+  @override
+  FutureEitherVoid createNotification(Map<String, dynamic> notification) async {
+    return await handleError(() async {
+      await _notificationDatasource.createNotification(notification);
+    });
+  }
 
-//   @override
-//   Future<List<Document>> getNotifications(String uid) async {
-//     final documents = await _db.listDocuments(
-//       databaseId: AppwriteConstants.databaseId,
-//       collectionId: AppwriteConstants.notificationsCollectionId,
-//       queries: [
-//         Query.equal('uid', uid),
-//       ],
-//     );
-//     return documents.documents;
-//   }
+  @override
+  FutureEither<List<Notification>> getNotifications(int uid) async {
+    return await handleError(() async {
+      List<Map<String, dynamic>> tweets =
+          await _notificationDatasource.getNotifications(uid);
+      return tweets.map((e) => Notification.fromMap(e)).toList();
+    });
+  }
 
-//   @override
-//   Stream<RealtimeMessage> getLatestNotification() {
-//     return _realtime.subscribe([
-//       'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.notificationsCollectionId}.documents'
-//     ]).stream;
-//   }
-// }
+  // @override
+  // Stream<RealtimeMessage> getLatestNotification() {
+  //   return _realtime.subscribe([
+  //     'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.notificationsCollectionId}.documents'
+  //   ]).stream;
+  // }
+}

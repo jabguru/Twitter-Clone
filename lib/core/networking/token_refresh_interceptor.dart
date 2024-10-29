@@ -1,19 +1,22 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:twitter_clone/apis/app_storage.dart';
 import 'package:twitter_clone/core/networking/urls.dart';
 
-class TokenRefreshInterceptor extends QueuedInterceptor {
-  final Dio dio;
+class TokenInterceptor extends QueuedInterceptorsWrapper {
   final AppStorage appStorage;
-  final Lock _lock = Lock();
-  String? _accessToken;
-  String? _refreshToken;
 
-  TokenRefreshInterceptor({
-    required this.dio,
+  TokenInterceptor({
     required this.appStorage,
   });
+
+  final Dio dio = Dio();
+  final Lock _lock = Lock();
+
+  String? _accessToken;
+  String? _refreshToken;
 
   @override
   void onRequest(
@@ -65,21 +68,29 @@ class TokenRefreshInterceptor extends QueuedInterceptor {
         // If refresh fails, propagate the error
         return handler.next(err);
       }
+    } else {
+      // ? if else is taken away, it calls the handler again and throws error
+      return handler.next(err);
     }
-    return handler.next(err);
   }
 
   Future<Map<String, dynamic>?> _onRefreshToken() async {
-    final Response res = await dio.post(
-      Endpoints.refreshToken,
-      data: {
-        'token': _refreshToken,
-      },
-    );
+    try {
+      final Response res = await dio.post(
+        Endpoints.refreshToken,
+        data: {
+          'token': _refreshToken,
+        },
+      );
 
-    if (res.statusCode == 200) {
-      return res.data;
+      if (res.statusCode == 200) {
+        return res.data;
+      }
+    } catch (e) {
+      // TODO: ERROR OCCURS WHEN REFRESH TOKEN HAS EXPIRED. LOG THE USER OUT AND REDIRECT TO LOGIN SCREEN
+      print("Error on refresh token: $e");
     }
+
     return null;
   }
 }

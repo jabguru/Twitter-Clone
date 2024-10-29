@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/common/common.dart';
+import 'package:twitter_clone/constants/global_variables.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
 import 'package:twitter_clone/features/auth/view/signup_view.dart';
 import 'package:twitter_clone/features/home/view/home_view.dart';
@@ -18,6 +19,8 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Twitter Clone',
       theme: AppTheme.theme,
+      navigatorKey: GlobalVariables.navigatorKey,
+      debugShowCheckedModeBanner: false,
       home: ref.watch(currentUserAccountProvider).when(
             data: (user) {
               if (user != null) return const HomeView();

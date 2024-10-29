@@ -14,4 +14,21 @@ class Endpoints {
   static String saveUser = '$baseUrl/users/save';
   static String getUser(int id) => '$baseUrl/users/$id';
   static String searchUsers(String name) => '$baseUrl/users/search';
+
+  // ? TWEETS
+  static String tweetBase = '$baseUrl/tweets';
+  static String shareTweet = '$tweetBase/share';
+  // ignore: unnecessary_string_interpolations
+  static String getTweets = '$tweetBase';
+  static String updateTweet(int id) => '$tweetBase/update/$id';
+  static String getRepliesToTweet(int id) => '$tweetBase/replies/$id';
+  static String getTweetById(int id) => '$tweetBase/$id';
+  static String getUserTweets(int userId) => '$tweetBase/user/$userId';
+  static String getTweetsByHashtag = '$tweetBase/hashtag';
+
+  // ? NOTIFICATIONS
+  static String notificationBase = '$baseUrl/notifications';
+  static String createNotification = '$notificationBase/create';
+  static String getNotifications(int userId) =>
+      '$notificationBase/user/$userId';
 }

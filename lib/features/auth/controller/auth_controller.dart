@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/auth_api.dart';
+import 'package:twitter_clone/apis/user_api.dart';
+import 'package:twitter_clone/constants/global_variables.dart';
 import 'package:twitter_clone/core/error/handler.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/view/login_view.dart';
@@ -12,38 +14,38 @@ final authControllerProvider =
     StateNotifierProvider<AuthController, bool>((ref) {
   return AuthController(
     authAPI: ref.watch(authAPIProvider),
-    // userAPI: ref.watch(userAPIProvider),
+    userAPI: ref.watch(userAPIProvider),
   );
 });
 
 final currentUserDetailsProvider = FutureProvider((ref) {
-  final currentUserId = ref.watch(currentUserAccountProvider).value!.$id;
+  final currentUserId = ref.watch(currentUserAccountProvider).value!.id;
   final userDetails = ref.watch(userDetailsProvider(currentUserId));
   return userDetails.value;
 });
 
-final userDetailsProvider = FutureProvider.family((ref, String uid) {
+final userDetailsProvider = FutureProvider.family((ref, int uid) {
   final authController = ref.watch(authControllerProvider.notifier);
   return authController.getUserData(uid);
 });
 
 final currentUserAccountProvider = FutureProvider((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
-  // return authController.currentUser();
+  return authController.currentUser();
 });
 
 class AuthController extends StateNotifier<bool> {
   final AuthAPI _authAPI;
-  // final UserAPI _userAPI;
+  final UserAPI _userAPI;
   AuthController({
     required AuthAPI authAPI,
-    // required UserAPI userAPI,
+    required UserAPI userAPI,
   })  : _authAPI = authAPI,
-        // _userAPI = userAPI,
+        _userAPI = userAPI,
         super(false);
   // state = isLoading
 
-  // Future<User?> currentUser() => _authAPI.currentUserAccount();
+  Future<UserModel?> currentUser() => _authAPI.currentUserAccount();
 
   void signUp({
     required String email,
@@ -84,11 +86,13 @@ class AuthController extends StateNotifier<bool> {
     );
   }
 
-  Future<UserModel> getUserData(String uid) async {
-    // final document = await _userAPI.getUserData(uid);
-    // final updatedUser = UserModel.fromMap(document.data);
-    final updatedUser = UserModel.fromMap(const {});
-    return updatedUser;
+  Future<UserModel?> getUserData(int uid) async {
+    final document = await _userAPI.getUserData(uid);
+    return document.fold((l) {
+      showSnackBar(
+          GlobalVariables.navigatorKey.currentContext!, getFailureMessage(l));
+      return null;
+    }, (r) => r);
   }
 
   void logout(BuildContext context) async {

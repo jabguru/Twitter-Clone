@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/common/loading_page.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
+import 'package:twitter_clone/features/user_profile/controller/user_profile_controller.dart';
 import 'package:twitter_clone/features/user_profile/view/user_profile_view.dart';
 import 'package:twitter_clone/theme/pallete.dart';
 
@@ -52,14 +53,14 @@ class SideDrawer extends ConsumerWidget {
                 ),
               ),
               onTap: () {
-                // ref
-                //     .read(userProfileControllerProvider.notifier)
-                //     .updateUserProfile(
-                //       userModel: currentUser.copyWith(isTwitterBlue: true),
-                //       context: context,
-                //       bannerFile: null,
-                //       profileFile: null,
-                //     );
+                ref
+                    .read(userProfileControllerProvider.notifier)
+                    .updateUserProfile(
+                      userModel: currentUser.copyWith(isTwitterBlue: true),
+                      context: context,
+                      bannerFile: null,
+                      profileFile: null,
+                    );
               },
             ),
             ListTile(

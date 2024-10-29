@@ -2,9 +2,9 @@ import 'package:twitter_clone/core/enums/notification_type_enum.dart';
 
 class Notification {
   final String text;
-  final String postId;
-  final String id;
-  final String uid;
+  final int postId;
+  final int id;
+  final int uid;
   final NotificationType notificationType;
   Notification({
     required this.text,
@@ -16,9 +16,9 @@ class Notification {
 
   Notification copyWith({
     String? text,
-    String? postId,
-    String? id,
-    String? uid,
+    int? postId,
+    int? id,
+    int? uid,
     NotificationType? notificationType,
   }) {
     return Notification(
@@ -45,7 +45,7 @@ class Notification {
     return Notification(
       text: map['text'] ?? '',
       postId: map['postId'] ?? '',
-      id: map['\$id'] ?? '',
+      id: map['id'] ?? '',
       uid: map['uid'] ?? '',
       notificationType:
           (map['notificationType'] as String).toNotificationTypeEnum(),

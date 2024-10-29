@@ -8,6 +8,7 @@ import 'package:twitter_clone/common/common.dart';
 import 'package:twitter_clone/constants/constants.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
+import 'package:twitter_clone/features/tweet/controller/tweet_controller.dart';
 import 'package:twitter_clone/features/user_profile/widget/profile_pic_widget.dart';
 import 'package:twitter_clone/theme/pallete.dart';
 
@@ -27,13 +28,11 @@ class _CreateTweetViewState extends ConsumerState<CreateTweetView> {
   List<File> images = [];
 
   void shareTweet() {
-    // ref.read(tweetControllerProvider.notifier).shareTweet(
-    //       images: images,
-    //       text: tweetTextController.text,
-    //       context: context,
-    //       repliedTo: '',
-    //       repliedToUserId: '',
-    //     );
+    ref.read(tweetControllerProvider.notifier).shareTweet(
+          images: images,
+          text: tweetTextController.text,
+          context: context,
+        );
     Navigator.pop(context);
   }
 
@@ -51,8 +50,7 @@ class _CreateTweetViewState extends ConsumerState<CreateTweetView> {
   @override
   Widget build(BuildContext context) {
     final currentUser = ref.watch(currentUserDetailsProvider).value;
-    // final isLoading = ref.watch(tweetControllerProvider);
-    const isLoading = true;
+    final isLoading = ref.watch(tweetControllerProvider);
 
     return Scaffold(
       appBar: AppBar(

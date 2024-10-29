@@ -1,148 +1,103 @@
-// import 'package:appwrite/appwrite.dart';
-// import 'package:appwrite/models.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:fpdart/fpdart.dart';
-// import 'package:twitter_clone/constants/appwrite_constants.dart';
-// import 'package:twitter_clone/core/core.dart';
-// import 'package:twitter_clone/core/providers.dart';
-// import 'package:twitter_clone/models/tweet_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:twitter_clone/apis/datasource/tweet_datasource.dart';
+import 'package:twitter_clone/core/core.dart';
+import 'package:twitter_clone/core/error/handler.dart';
+import 'package:twitter_clone/models/tweet_model.dart';
 
-// final tweetAPIProvider = Provider((ref) {
-//   return TweetAPI(
-//     db: ref.watch(appWriteDatabaseProvider),
-//     realtime: ref.watch(appwriteRealtimeProvider('Tweets')),
-//   );
-// });
+final tweetAPIProvider = Provider((ref) {
+  return TweetAPI(
+    tweetDatasource: ref.watch(tweetDatasourceProvider),
+  );
+});
 
-// abstract class ITweetAPI {
-//   FutureEither<Document> shareTweet(Tweet tweet);
-//   Future<List<Document>> getTweets();
-//   Stream<RealtimeMessage> getLatestTweet();
-//   FutureEither<Document> updateTweet(
-//     Tweet tweet, {
-//     required Map<String, dynamic> data,
-//   });
-//   Future<List<Document>> getRepliesToTweet(Tweet tweet);
-//   Future<Document> getTweetById(String id);
-//   Future<List<Document>> getUserTweets(String uid);
-//   Future<List<Document>> getTweetsByHashtag(String hashtag);
-// }
+abstract class ITweetAPI {
+  FutureEitherVoid shareTweet(
+      {required int userId, required Map<String, dynamic> tweet});
+  FutureEither<List<Tweet>> getTweets();
+  // Stream<RealtimeMessage> getLatestTweet();
+  FutureEitherVoid updateTweet(
+    int id, {
+    required Map<String, dynamic> data,
+  });
+  FutureEither<List<Tweet>> getRepliesToTweet(int id);
+  FutureEither<Tweet> getTweetById(int id);
+  FutureEither<List<Tweet>> getUserTweets(int uid);
+  FutureEither<List<Tweet>> getTweetsByHashtag(String hashtag);
+}
 
-// class TweetAPI implements ITweetAPI {
-//   final Databases _db;
-//   final Realtime _realtime;
-//   TweetAPI({required Databases db, required Realtime realtime})
-//       : _db = db,
-//         _realtime = realtime;
+class TweetAPI implements ITweetAPI {
+  final TweetDatasource _tweetDatasource;
 
-//   @override
-//   FutureEither<Document> shareTweet(Tweet tweet) async {
-//     try {
-//       final document = await _db.createDocument(
-//         databaseId: AppwriteConstants.databaseId,
-//         collectionId: AppwriteConstants.tweetsCollectionId,
-//         documentId: ID.unique(),
-//         data: tweet.toMap(),
-//       );
-//       return right(document);
-//     } on AppwriteException catch (e, st) {
-//       return left(
-//         Failure(
-//           e.message ?? 'Some unexpected error occurred',
-//           st,
-//         ),
-//       );
-//     } catch (e, st) {
-//       return left(Failure(e.toString(), st));
-//     }
-//   }
+  TweetAPI({required TweetDatasource tweetDatasource})
+      : _tweetDatasource = tweetDatasource;
 
-//   @override
-//   Future<List<Document>> getTweets() async {
-//     final documents = await _db.listDocuments(
-//       databaseId: AppwriteConstants.databaseId,
-//       collectionId: AppwriteConstants.tweetsCollectionId,
-//       queries: [
-//         Query.orderDesc('tweetedAt'),
-//       ],
-//     );
-//     return documents.documents;
-//   }
+  @override
+  FutureEither<Tweet> shareTweet(
+      {required int userId, required Map<String, dynamic> tweet}) async {
+    return await handleError(() async {
+      Map<String, dynamic> tweetMap =
+          await _tweetDatasource.shareTweet(userId: userId, tweet: tweet);
+      return Tweet.fromMap(tweetMap);
+    });
+  }
 
-//   @override
-//   Stream<RealtimeMessage> getLatestTweet() {
-//     return _realtime.subscribe([
-//       'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.tweetsCollectionId}.documents'
-//     ]).stream;
-//   }
+  @override
+  FutureEither<List<Tweet>> getTweets() async {
+    return await handleError(() async {
+      List<Map<String, dynamic>> tweets = await _tweetDatasource.getTweets();
+      return tweets.map((e) => Tweet.fromMap(e)).toList();
+    });
+  }
 
-//   @override
-//   FutureEither<Document> updateTweet(
-//     Tweet tweet, {
-//     required Map<String, dynamic> data,
-//   }) async {
-//     try {
-//       final document = await _db.updateDocument(
-//         databaseId: AppwriteConstants.databaseId,
-//         collectionId: AppwriteConstants.tweetsCollectionId,
-//         documentId: tweet.id,
-//         data: data,
-//       );
-//       return right(document);
-//     } on AppwriteException catch (e, st) {
-//       return left(
-//         Failure(
-//           e.message ?? 'Some unexpected error occurred',
-//           st,
-//         ),
-//       );
-//     } catch (e, st) {
-//       return left(Failure(e.toString(), st));
-//     }
-//   }
+  // @override
+  // Stream<RealtimeMessage> getLatestTweet() {
+  //   return _realtime.subscribe([
+  //     'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.tweetsCollectionId}.documents'
+  //   ]).stream;
+  // }
 
-//   @override
-//   Future<List<Document>> getRepliesToTweet(Tweet tweet) async {
-//     final document = await _db.listDocuments(
-//       databaseId: AppwriteConstants.databaseId,
-//       collectionId: AppwriteConstants.tweetsCollectionId,
-//       queries: [
-//         Query.equal('repliedTo', tweet.id),
-//       ],
-//     );
-//     return document.documents;
-//   }
+  @override
+  FutureEitherVoid updateTweet(
+    int id, {
+    required Map<String, dynamic> data,
+  }) async {
+    return await handleError(() async {
+      await _tweetDatasource.updateTweet(id, data: data);
+    });
+  }
 
-//   @override
-//   Future<Document> getTweetById(String id) async {
-//     return _db.getDocument(
-//       databaseId: AppwriteConstants.databaseId,
-//       collectionId: AppwriteConstants.tweetsCollectionId,
-//       documentId: id,
-//     );
-//   }
+  @override
+  FutureEither<List<Tweet>> getRepliesToTweet(int id) async {
+    return await handleError(() async {
+      List<Map<String, dynamic>> tweets =
+          await _tweetDatasource.getRepliesToTweet(id);
+      return tweets.map((e) => Tweet.fromMap(e)).toList();
+    });
+  }
 
-//   @override
-//   Future<List<Document>> getUserTweets(String uid) async {
-//     final documents = await _db.listDocuments(
-//       databaseId: AppwriteConstants.databaseId,
-//       collectionId: AppwriteConstants.tweetsCollectionId,
-//       queries: [
-//         Query.equal('uid', uid),
-//       ],
-//     );
-//     return documents.documents;
-//   }
+  @override
+  FutureEither<Tweet> getTweetById(int id) async {
+    return await handleError(() async {
+      Map<String, dynamic> tweetMap = await _tweetDatasource.getTweetById(id);
+      return Tweet.fromMap(tweetMap);
+    });
+  }
 
-//   @override
-//   Future<List<Document>> getTweetsByHashtag(String hashtag) async {
-//     final documents = await _db.listDocuments(
-//       databaseId: AppwriteConstants.databaseId,
-//       collectionId: AppwriteConstants.tweetsCollectionId,
-//       queries: [
-//         Query.search('hashtags', hashtag),
-//       ],
-//     );
-//     return documents.documents;
-//   }
-// }
+  @override
+  FutureEither<List<Tweet>> getUserTweets(int uid) async {
+    return await handleError(() async {
+      List<Map<String, dynamic>> tweets =
+          await _tweetDatasource.getUserTweets(uid);
+      return tweets.map((e) => Tweet.fromMap(e)).toList();
+    });
+  }
+
+  @override
+  FutureEither<List<Tweet>> getTweetsByHashtag(String hashtag) async {
+    return await handleError(() async {
+      List<Map<String, dynamic>> tweets =
+          await _tweetDatasource.getTweetsByHashtag(hashtag);
+      return tweets.map((e) => Tweet.fromMap(e)).toList();
+    });
+  }
+}

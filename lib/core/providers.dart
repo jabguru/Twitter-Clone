@@ -18,8 +18,7 @@ final storageProvider = Provider((ref) {
 final dioProvider = Provider((ref) {
   Dio dio = Dio();
   dio.interceptors.add(
-    TokenRefreshInterceptor(
-      dio: dio,
+    TokenInterceptor(
       appStorage: ref.watch(storageProvider),
     ),
   );
