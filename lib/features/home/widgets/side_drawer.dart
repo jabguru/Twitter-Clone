@@ -56,7 +56,8 @@ class SideDrawer extends ConsumerWidget {
                 ref
                     .read(userProfileControllerProvider.notifier)
                     .updateUserProfile(
-                      userModel: currentUser.copyWith(isTwitterBlue: true),
+                      id: currentUser.id,
+                      userMap: {'isTwitterBlue': true},
                       context: context,
                       bannerFile: null,
                       profileFile: null,

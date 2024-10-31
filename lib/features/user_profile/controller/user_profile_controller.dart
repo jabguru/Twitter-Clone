@@ -61,14 +61,16 @@ class UserProfileController extends StateNotifier<bool> {
   }
 
   void updateUserProfile({
-    required UserModel userModel,
     required BuildContext context,
+    required int id,
+    required Map<String, dynamic> userMap,
     required File? bannerFile,
     required File? profileFile,
   }) async {
     state = true;
     final res = await _userAPI.saveUserData(
-      userModel,
+      id: id,
+      userMap: userMap,
       profilePhoto: profileFile,
       bannerPhoto: bannerFile,
     );
@@ -80,33 +82,35 @@ class UserProfileController extends StateNotifier<bool> {
   }
 
   void followUser({
-    required UserModel user,
+    required UserModel otherUser,
     required BuildContext context,
     required UserModel currentUser,
   }) async {
     // already following
-    if (currentUser.following.contains(user.id)) {
-      user.followers.remove(currentUser.id);
-      currentUser.following.remove(user.id);
+    if (currentUser.following.contains(otherUser.id)) {
+      otherUser.followers.remove(currentUser.id);
+      currentUser.following.remove(otherUser.id);
     } else {
-      user.followers.add(currentUser.id);
-      currentUser.following.add(user.id);
+      otherUser.followers.add(currentUser.id);
+      currentUser.following.add(otherUser.id);
     }
 
-    user = user.copyWith(followers: user.followers);
+    otherUser = otherUser.copyWith(followers: otherUser.followers);
     currentUser = currentUser.copyWith(
       following: currentUser.following,
     );
 
-    final res = await _userAPI.saveUserData(user);
+    final res = await _userAPI.saveUserData(
+        id: otherUser.id, userMap: {'followers': otherUser.followers});
     res.fold((l) => showSnackBar(context, getFailureMessage(l)), (r) async {
-      final res2 = await _userAPI.saveUserData(currentUser);
+      final res2 = await _userAPI.saveUserData(
+          id: currentUser.id, userMap: {'following': currentUser.following});
       res2.fold((l) => showSnackBar(context, getFailureMessage(l)), (r) {
         _notificationController.createNotification(
           text: '${currentUser.name} followed you!',
           postId: null,
           notificationType: NotificationType.follow,
-          uid: user.id,
+          uid: otherUser.id,
         );
       });
     });

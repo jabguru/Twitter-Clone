@@ -9,6 +9,7 @@ abstract class IAppStorage {
   Future<void> saveRefreshToken(String value);
   Future<String?> getRefreshToken();
   Future<void> saveUser(Map value);
+  Future<void> clearStorage();
   Future<UserModel?> getUser();
 }
 
@@ -53,5 +54,10 @@ class AppStorage implements IAppStorage {
       return UserModel.fromMap(userMap);
     }
     return null;
+  }
+
+  @override
+  Future<void> clearStorage() async {
+    await secureStorage.deleteAll();
   }
 }

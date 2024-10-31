@@ -77,10 +77,11 @@ class _EditProfileViewState extends ConsumerState<EditProfileView> {
               ref
                   .read(userProfileControllerProvider.notifier)
                   .updateUserProfile(
-                    userModel: user!.copyWith(
-                      bio: bioController.text,
-                      name: nameController.text,
-                    ),
+                    id: user!.id,
+                    userMap: {
+                      'bio': bioController.text,
+                      'name': nameController.text,
+                    },
                     context: context,
                     bannerFile: bannerFile,
                     profileFile: profileFile,

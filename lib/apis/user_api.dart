@@ -16,8 +16,9 @@ final userAPIProvider = Provider(
 );
 
 abstract class IUserAPI {
-  FutureEitherVoid saveUserData(
-    UserModel userModel, {
+  FutureEitherVoid saveUserData({
+    required int id,
+    required Map<String, dynamic> userMap,
     File? profilePhoto,
     File? bannerPhoto,
   });
@@ -42,14 +43,16 @@ class UserAPI implements IUserAPI {
   }
 
   @override
-  FutureEitherVoid saveUserData(
-    UserModel userModel, {
+  FutureEitherVoid saveUserData({
+    required int id,
+    required Map<String, dynamic> userMap,
     File? profilePhoto,
     File? bannerPhoto,
   }) async {
     return await handleError(() async {
-      await _userDatasource.saveUserData(
-        userModel.toMap(),
+      await _userDatasource.updateUser(
+        id: id,
+        userMap: userMap,
         profilePhoto: profilePhoto,
         bannerPhoto: bannerPhoto,
       );

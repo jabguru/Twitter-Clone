@@ -11,7 +11,7 @@ class Endpoints {
   static String refreshToken = '$baseUrl/refreshToken';
 
   // ? USER
-  static String saveUser = '$baseUrl/users/save';
+  static String updateUser(int id) => '$baseUrl/users/update/$id';
   static String getUser(int id) => '$baseUrl/users/$id';
   static String searchUsers(String name) => '$baseUrl/users/search';
 

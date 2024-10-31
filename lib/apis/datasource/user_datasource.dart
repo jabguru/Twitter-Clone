@@ -12,8 +12,9 @@ final userDatasourceProvider = Provider((ref) {
 });
 
 abstract class IUserDatasource {
-  Future<void> saveUserData(
-    Map<String, dynamic> userModel, {
+  Future<void> updateUser({
+    required int id,
+    required Map<String, dynamic> userMap,
     File? profilePhoto,
     File? bannerPhoto,
   });
@@ -42,13 +43,14 @@ class UserDatasource implements IUserDatasource {
   }
 
   @override
-  Future<void> saveUserData(
-    Map<String, dynamic> userModel, {
+  Future<void> updateUser({
+    required int id,
+    required Map<String, dynamic> userMap,
     File? profilePhoto,
     File? bannerPhoto,
   }) async {
     Map<String, dynamic> requestBody = {};
-    requestBody.addAll(userModel);
+    requestBody.addAll(userMap);
 
     if (profilePhoto != null) {
       requestBody['profilePhoto'] = MultipartFile.fromFileSync(
@@ -65,7 +67,7 @@ class UserDatasource implements IUserDatasource {
     final formData = FormData.fromMap(requestBody);
 
     final Response res = await _dio.post(
-      Endpoints.saveUser,
+      Endpoints.updateUser(id),
       data: formData,
     );
 

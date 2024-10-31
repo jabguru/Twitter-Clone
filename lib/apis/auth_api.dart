@@ -70,7 +70,7 @@ class AuthAPI implements IAuthAPI {
 
   @override
   FutureEitherVoid logout() async {
-    return right(await _authDatasource.logout());
+    return right(await _appStorage.clearStorage());
     // try {
     //   await _account.deleteSession(
     //     sessionId: 'current',

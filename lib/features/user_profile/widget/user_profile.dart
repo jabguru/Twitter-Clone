@@ -64,7 +64,7 @@ class UserProfile extends ConsumerWidget {
                               ref
                                   .read(userProfileControllerProvider.notifier)
                                   .followUser(
-                                    user: user,
+                                    otherUser: user,
                                     context: context,
                                     currentUser: currentUser,
                                   );
