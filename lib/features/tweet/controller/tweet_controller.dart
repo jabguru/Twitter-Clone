@@ -219,7 +219,7 @@ class TweetController extends StateNotifier<bool> {
     tweet = tweet.copyWith(likes: likes);
     final res = await _tweetAPI.updateTweet(
       tweet.id,
-      data: tweet.toMap(),
+      data: {'likes': likes},
     );
     res.fold((l) => null, (r) {
       _notificationController.createNotification(
@@ -246,7 +246,7 @@ class TweetController extends StateNotifier<bool> {
 
     final res = await _tweetAPI.updateTweet(
       tweet.id,
-      data: tweet.toMap(),
+      data: {'commentIds': commentIds},
     );
     res.fold((l) => null, (r) => null);
   }
@@ -263,7 +263,7 @@ class TweetController extends StateNotifier<bool> {
 
     final res = await _tweetAPI.updateTweet(
       tweet.id,
-      data: tweet.toMap(),
+      data: {'reshareCount': tweet.reshareCount + 1},
     );
     res.fold(
       (l) => showSnackBar(context, getFailureMessage(l)),
@@ -271,12 +271,14 @@ class TweetController extends StateNotifier<bool> {
         Map<String, dynamic> newTweetMap = tweet
             .copyWith(
               reshareCount: 0,
+              retweetedBy: 'currentUser.name',
             )
             .toMap();
         newTweetMap.remove("id");
         newTweetMap.remove("tweetedAt");
+        newTweetMap.remove("user");
         final res2 = await _tweetAPI.shareTweet(
-            userId: currentUser.id, tweet: newTweetMap);
+            userId: tweet.user.id, tweet: newTweetMap);
         res2.fold(
           (l) => showSnackBar(context, getFailureMessage(l)),
           (r) {

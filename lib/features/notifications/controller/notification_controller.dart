@@ -41,10 +41,9 @@ class NotificationController extends StateNotifier<bool> {
     final Map<String, dynamic> notificationMap = {
       'text': text,
       'postId': postId,
-      'uid': uid,
       'notificationType': notificationType.type,
     };
-    final res = await _notificationAPI.createNotification(notificationMap);
+    final res = await _notificationAPI.createNotification(notificationMap, uid);
     res.fold((l) => null, (r) => null);
   }
 

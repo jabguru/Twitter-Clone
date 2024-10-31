@@ -1,16 +1,17 @@
 import 'package:twitter_clone/core/enums/notification_type_enum.dart';
+import 'package:twitter_clone/models/user_model.dart';
 
 class Notification {
   final String text;
   final int postId;
   final int id;
-  final int uid;
+  final UserModel user;
   final NotificationType notificationType;
   Notification({
     required this.text,
     required this.postId,
     required this.id,
-    required this.uid,
+    required this.user,
     required this.notificationType,
   });
 
@@ -18,14 +19,14 @@ class Notification {
     String? text,
     int? postId,
     int? id,
-    int? uid,
+    UserModel? user,
     NotificationType? notificationType,
   }) {
     return Notification(
       text: text ?? this.text,
       postId: postId ?? this.postId,
       id: id ?? this.id,
-      uid: uid ?? this.uid,
+      user: user ?? this.user,
       notificationType: notificationType ?? this.notificationType,
     );
   }
@@ -35,7 +36,7 @@ class Notification {
 
     result.addAll({'text': text});
     result.addAll({'postId': postId});
-    result.addAll({'uid': uid});
+    result.addAll({'user': user});
     result.addAll({'notificationType': notificationType.type});
 
     return result;
@@ -46,7 +47,7 @@ class Notification {
       text: map['text'] ?? '',
       postId: map['postId'] ?? '',
       id: map['id'] ?? '',
-      uid: map['uid'] ?? '',
+      user: UserModel.fromMap(map['user']),
       notificationType:
           (map['notificationType'] as String).toNotificationTypeEnum(),
     );
@@ -54,7 +55,7 @@ class Notification {
 
   @override
   String toString() {
-    return 'Notification(text: $text, postId: $postId, id: $id, uid: $uid, notificationType: $notificationType)';
+    return 'Notification(text: $text, postId: $postId, id: $id, user: $user, notificationType: $notificationType)';
   }
 
   @override
@@ -65,7 +66,7 @@ class Notification {
         other.text == text &&
         other.postId == postId &&
         other.id == id &&
-        other.uid == uid &&
+        other.user == user &&
         other.notificationType == notificationType;
   }
 
@@ -74,7 +75,7 @@ class Notification {
     return text.hashCode ^
         postId.hashCode ^
         id.hashCode ^
-        uid.hashCode ^
+        user.hashCode ^
         notificationType.hashCode;
   }
 }

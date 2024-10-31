@@ -11,7 +11,8 @@ final notificationAPIProvider = Provider((ref) {
 });
 
 abstract class INotificationAPI {
-  FutureEitherVoid createNotification(Map<String, dynamic> notification);
+  FutureEitherVoid createNotification(
+      Map<String, dynamic> notification, int userId);
   FutureEither<List<Notification>> getNotifications(int uid);
   // Stream<RealtimeMessage> getLatestNotification();
 }
@@ -22,9 +23,10 @@ class NotificationAPI implements INotificationAPI {
       : _notificationDatasource = notificationDatasource;
 
   @override
-  FutureEitherVoid createNotification(Map<String, dynamic> notification) async {
+  FutureEitherVoid createNotification(
+      Map<String, dynamic> notification, int userId) async {
     return await handleError(() async {
-      await _notificationDatasource.createNotification(notification);
+      await _notificationDatasource.createNotification(notification, userId);
     });
   }
 

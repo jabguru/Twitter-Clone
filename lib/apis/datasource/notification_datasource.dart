@@ -10,7 +10,8 @@ final notificationDatasourceProvider = Provider((ref) {
 });
 
 abstract class INotificationDatasource {
-  Future<void> createNotification(Map<String, dynamic> notification);
+  Future<void> createNotification(
+      Map<String, dynamic> notification, int userId);
   Future<List<Map<String, dynamic>>> getNotifications(int uid);
   // Stream<RealtimeMessage> getLatestNotification();
 }
@@ -23,10 +24,14 @@ class NotificationDatasource implements INotificationDatasource {
   }) : _dio = dio;
 
   @override
-  Future<void> createNotification(Map<String, dynamic> notification) async {
+  Future<void> createNotification(
+      Map<String, dynamic> notification, int userId) async {
     final Response res = await _dio.post(
       Endpoints.createNotification,
       data: notification,
+      queryParameters: {
+        'userId': userId,
+      },
     );
 
     if (res.statusCode == 201) {
