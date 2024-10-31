@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:twitter_clone/core/enums/tweet_type_enum.dart';
+import 'package:twitter_clone/core/networking/urls.dart';
 import 'package:twitter_clone/models/user_model.dart';
 
 @immutable
@@ -64,6 +65,16 @@ class Tweet {
     );
   }
 
+  String get getLink {
+    if (link.isNotEmpty) {
+      if (link.startsWith("http")) {
+        return link;
+      }
+      return 'https://$link';
+    }
+    return '';
+  }
+
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
 
@@ -89,13 +100,17 @@ class Tweet {
       hashtags:
           map['hashtags'] != null ? List<String>.from(map['hashtags']) : [],
       link: map['link'] ?? '',
-      imageLinks:
-          map['imageLinks'] != null ? List<String>.from(map['imageLinks']) : [],
+      imageLinks: map['imageLinks'] != null
+          ? (map['imageLinks'] as List)
+              .map((e) => Endpoints.getImageUrl(e))
+              .toList()
+          : [],
       user: UserModel.fromMap(map['user']),
       tweetType: (map['tweetType'] as String).toTweetTypeEnum(),
       tweetedAt: DateTime.parse(map['tweetedAt']),
-      likes: List<int>.from(map['likes']),
-      commentIds: List<int>.from(map['commentIds']),
+      likes: map['likes'] != null ? List<int>.from(map['likes']) : [],
+      commentIds:
+          map['commentIds'] != null ? List<int>.from(map['commentIds']) : [],
       id: map['id'] ?? '',
       reshareCount: map['reshareCount']?.toInt() ?? 0,
       retweetedBy: map['retweetedBy'],

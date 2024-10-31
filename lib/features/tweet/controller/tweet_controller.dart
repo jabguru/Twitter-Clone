@@ -18,7 +18,6 @@ final tweetControllerProvider =
   return TweetController(
     ref: ref,
     tweetAPI: ref.watch(tweetAPIProvider),
-    // storageAPI: ref.watch(storageAPIProvider),
     notificationController: ref.watch(notificationControllerProvider.notifier),
   );
 });
@@ -53,16 +52,13 @@ final getTweetsByHashtagProvider = FutureProvider.family((ref, String hashtag) {
 class TweetController extends StateNotifier<bool> {
   final Ref _ref;
   final TweetAPI _tweetAPI;
-  // final StorageAPI _storageAPI;
   final NotificationController _notificationController;
   TweetController({
     required Ref ref,
     required TweetAPI tweetAPI,
-    // required StorageAPI storageAPI,
     required NotificationController notificationController,
   })  : _ref = ref,
         _tweetAPI = tweetAPI,
-        // _storageAPI = storageAPI,
         _notificationController = notificationController,
         super(false);
 
@@ -129,9 +125,16 @@ class TweetController extends StateNotifier<bool> {
       // imageLinks: imageLinks,
       "tweetType": TweetType.image.type,
     };
-    final res = await _tweetAPI.shareTweet(userId: user.id, tweet: tweetMap);
+    final res = await _tweetAPI.shareTweet(
+      userId: user.id,
+      tweet: tweetMap,
+      images: images,
+    );
     res.fold(
-      (l) => showSnackBar(context, getFailureMessage(l)),
+      (l) {
+        state = false;
+        showSnackBar(context, getFailureMessage(l));
+      },
       (r) async {
         if (repliedToUserId != null && repliedTo != null) {
           Tweet? tweetRepliedTo = await getTweetById(repliedTo);
@@ -165,11 +168,14 @@ class TweetController extends StateNotifier<bool> {
       "text": text,
       "hashtags": hashtags,
       "link": link,
-      "tweetType": TweetType.image.type,
+      "tweetType": TweetType.text.type,
     };
     final res = await _tweetAPI.shareTweet(userId: user.id, tweet: tweetMap);
     res.fold(
-      (l) => showSnackBar(context, getFailureMessage(l)),
+      (l) {
+        state = false;
+        showSnackBar(context, getFailureMessage(l));
+      },
       (r) async {
         if (repliedToUserId != null && repliedTo != null) {
           Tweet? tweetRepliedTo = await getTweetById(repliedTo);

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/datasource/tweet_datasource.dart';
 import 'package:twitter_clone/core/core.dart';
@@ -11,8 +13,11 @@ final tweetAPIProvider = Provider((ref) {
 });
 
 abstract class ITweetAPI {
-  FutureEitherVoid shareTweet(
-      {required int userId, required Map<String, dynamic> tweet});
+  FutureEitherVoid shareTweet({
+    required int userId,
+    required Map<String, dynamic> tweet,
+    List<File>? images,
+  });
   FutureEither<List<Tweet>> getTweets();
   // Stream<RealtimeMessage> getLatestTweet();
   FutureEitherVoid updateTweet(
@@ -32,11 +37,17 @@ class TweetAPI implements ITweetAPI {
       : _tweetDatasource = tweetDatasource;
 
   @override
-  FutureEither<Tweet> shareTweet(
-      {required int userId, required Map<String, dynamic> tweet}) async {
+  FutureEither<Tweet> shareTweet({
+    required int userId,
+    required Map<String, dynamic> tweet,
+    List<File>? images,
+  }) async {
     return await handleError(() async {
-      Map<String, dynamic> tweetMap =
-          await _tweetDatasource.shareTweet(userId: userId, tweet: tweet);
+      Map<String, dynamic> tweetMap = await _tweetDatasource.shareTweet(
+        userId: userId,
+        tweet: tweet,
+        images: images,
+      );
       return Tweet.fromMap(tweetMap);
     });
   }

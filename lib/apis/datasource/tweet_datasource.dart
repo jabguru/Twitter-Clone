@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/core/error/exceptions.dart';
@@ -13,6 +15,7 @@ abstract class ITweetDatasource {
   Future<Map<String, dynamic>> shareTweet({
     required int userId,
     required Map<String, dynamic> tweet,
+    List<File>? images,
   });
   Future<List<Map<String, dynamic>>> getTweets();
   // Stream<RealtimeMessage> getLatestTweet();
@@ -102,14 +105,27 @@ class TweetDatasource implements ITweetDatasource {
   }
 
   @override
-  Future<Map<String, dynamic>> shareTweet(
-      {required int userId, required Map<String, dynamic> tweet}) async {
+  Future<Map<String, dynamic>> shareTweet({
+    required int userId,
+    required Map<String, dynamic> tweet,
+    List<File>? images,
+  }) async {
+    Map<String, dynamic> requestBody = {};
+    requestBody.addAll(tweet);
+    if (images != null) {
+      requestBody['files'] = images
+          .map((File image) => MultipartFile.fromFileSync(image.path))
+          .toList();
+      requestBody['file'] = MultipartFile.fromFileSync(images.first.path);
+    }
+    final formData = FormData.fromMap(requestBody);
+
     final Response res = await _dio.post(
       Endpoints.shareTweet,
       queryParameters: {
         'userId': userId,
       },
-      data: tweet,
+      data: formData,
     );
 
     if (res.statusCode == 201) {

@@ -20,6 +20,9 @@ Future<Either<Failure, T>> handleError<T>(Future<T> Function() process) async {
       return left(NetworkFailure());
     }
     return left(ServerFailure());
+  } on Exception catch (e) {
+    print("Exception: $e");
+    return left(ServerFailure());
   }
 }
 
