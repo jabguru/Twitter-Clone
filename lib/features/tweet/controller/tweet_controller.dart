@@ -281,7 +281,7 @@ class TweetController extends StateNotifier<bool> {
         Map<String, dynamic> newTweetMap = tweet
             .copyWith(
               reshareCount: 0,
-              retweetedBy: 'currentUser.name',
+              retweetedBy: currentUser.name,
             )
             .toMap();
         newTweetMap.remove("id");
