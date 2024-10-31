@@ -80,9 +80,10 @@ class UserDatasource implements IUserDatasource {
 
   @override
   Future<List<Map<String, dynamic>>> searchUserByName(String name) async {
-    final Response res = await _dio.get(
-      Endpoints.searchUsers(name),
-    );
+    final Response res =
+        await _dio.get(Endpoints.searchUsers, queryParameters: {
+      'name': name,
+    });
 
     if (res.statusCode == 200) {
       return List<Map<String, dynamic>>.from(res.data);

@@ -13,7 +13,7 @@ class Endpoints {
   // ? USER
   static String updateUser(int id) => '$baseUrl/users/update/$id';
   static String getUser(int id) => '$baseUrl/users/$id';
-  static String searchUsers(String name) => '$baseUrl/users/search';
+  static String searchUsers = '$baseUrl/users/search';
 
   // ? TWEETS
   static String tweetBase = '$baseUrl/tweets';

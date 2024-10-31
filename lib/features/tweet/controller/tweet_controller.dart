@@ -122,6 +122,11 @@ class TweetController extends StateNotifier<bool> {
       "link": link,
       "tweetType": TweetType.image.type,
     };
+
+    if (repliedTo != null) {
+      tweetMap['repliedTo'] = repliedTo;
+    }
+
     final res = await _tweetAPI.shareTweet(
       userId: user.id,
       tweet: tweetMap,
@@ -168,6 +173,11 @@ class TweetController extends StateNotifier<bool> {
       "link": link,
       "tweetType": TweetType.text.type,
     };
+
+    if (repliedTo != null) {
+      tweetMap['repliedTo'] = repliedTo;
+    }
+
     final res = await _tweetAPI.shareTweet(userId: user.id, tweet: tweetMap);
     res.fold(
       (l) {
