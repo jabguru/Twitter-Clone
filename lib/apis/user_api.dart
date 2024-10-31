@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/datasource/user_datasource.dart';
 import 'package:twitter_clone/core/core.dart';
@@ -14,7 +16,11 @@ final userAPIProvider = Provider(
 );
 
 abstract class IUserAPI {
-  FutureEitherVoid saveUserData(UserModel userModel);
+  FutureEitherVoid saveUserData(
+    UserModel userModel, {
+    File? profilePhoto,
+    File? bannerPhoto,
+  });
   FutureEither<UserModel> getUserData(int id);
   FutureEither<List<UserModel>> searchUserByName(String name);
   // Stream<RealtimeMessage> getLatestUserProfileData();
@@ -36,9 +42,17 @@ class UserAPI implements IUserAPI {
   }
 
   @override
-  FutureEitherVoid saveUserData(UserModel userModel) async {
+  FutureEitherVoid saveUserData(
+    UserModel userModel, {
+    File? profilePhoto,
+    File? bannerPhoto,
+  }) async {
     return await handleError(() async {
-      await _userDatasource.saveUserData(userModel.toMap());
+      await _userDatasource.saveUserData(
+        userModel.toMap(),
+        profilePhoto: profilePhoto,
+        bannerPhoto: bannerPhoto,
+      );
     });
   }
 

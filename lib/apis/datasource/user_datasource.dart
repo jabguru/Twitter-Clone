@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/core/error/exceptions.dart';
@@ -10,7 +12,11 @@ final userDatasourceProvider = Provider((ref) {
 });
 
 abstract class IUserDatasource {
-  Future<void> saveUserData(Map userModel);
+  Future<void> saveUserData(
+    Map<String, dynamic> userModel, {
+    File? profilePhoto,
+    File? bannerPhoto,
+  });
   Future<Map<String, dynamic>> getUserData(int id);
   Future<List<Map<String, dynamic>>> searchUserByName(String name);
   // Stream<RealtimeMessage> getLatestUserProfileData();
@@ -36,10 +42,31 @@ class UserDatasource implements IUserDatasource {
   }
 
   @override
-  Future<void> saveUserData(Map userModel) async {
+  Future<void> saveUserData(
+    Map<String, dynamic> userModel, {
+    File? profilePhoto,
+    File? bannerPhoto,
+  }) async {
+    Map<String, dynamic> requestBody = {};
+    requestBody.addAll(userModel);
+
+    if (profilePhoto != null) {
+      requestBody['profilePhoto'] = MultipartFile.fromFileSync(
+        profilePhoto.path,
+      );
+    }
+
+    if (bannerPhoto != null) {
+      requestBody['bannerPhoto'] = MultipartFile.fromFileSync(
+        bannerPhoto.path,
+      );
+    }
+
+    final formData = FormData.fromMap(requestBody);
+
     final Response res = await _dio.post(
       Endpoints.saveUser,
-      data: userModel,
+      data: formData,
     );
 
     if (res.statusCode == 200) {

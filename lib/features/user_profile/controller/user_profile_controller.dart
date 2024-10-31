@@ -37,16 +37,13 @@ final getLatestUserProfileDataProvider = StreamProvider((ref) {
 
 class UserProfileController extends StateNotifier<bool> {
   final TweetAPI _tweetAPI;
-  // final StorageAPI _storageAPI;
   final UserAPI _userAPI;
   final NotificationController _notificationController;
   UserProfileController({
     required TweetAPI tweetAPI,
-    // required StorageAPI storageAPI,
     required UserAPI userAPI,
     required NotificationController notificationController,
   })  : _tweetAPI = tweetAPI,
-        // _storageAPI = storageAPI,
         _userAPI = userAPI,
         _notificationController = notificationController,
         super(false);
@@ -70,22 +67,11 @@ class UserProfileController extends StateNotifier<bool> {
     required File? profileFile,
   }) async {
     state = true;
-    // TODO: FIX IMAGE HANDLING
-    // if (bannerFile != null) {
-    //   final bannerUrl = await _storageAPI.uploadImage([bannerFile]);
-    //   userModel = userModel.copyWith(
-    //     bannerPic: bannerUrl[0],
-    //   );
-    // }
-
-    // if (profileFile != null) {
-    //   final profileUrl = await _storageAPI.uploadImage([profileFile]);
-    //   userModel = userModel.copyWith(
-    //     profilePic: profileUrl[0],
-    //   );
-    // }
-
-    final res = await _userAPI.saveUserData(userModel);
+    final res = await _userAPI.saveUserData(
+      userModel,
+      profilePhoto: profileFile,
+      bannerPhoto: bannerFile,
+    );
     state = false;
     res.fold(
       (l) => showSnackBar(context, getFailureMessage(l)),

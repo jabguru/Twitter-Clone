@@ -115,14 +115,11 @@ class TweetController extends StateNotifier<bool> {
     final hashtags = _getHashTagsFromText(text);
     String link = _getLinkFromText(text);
     final user = _ref.read(currentUserDetailsProvider).value!;
-    // TODO: FIX IMAGES UPLOAD
-    // final imageLinks = await _storageAPI.uploadImage(images);
+
     Map<String, dynamic> tweetMap = {
       "text": text,
       "hashtags": hashtags,
       "link": link,
-      // TODO FIX
-      // imageLinks: imageLinks,
       "tweetType": TweetType.image.type,
     };
     final res = await _tweetAPI.shareTweet(
@@ -130,6 +127,7 @@ class TweetController extends StateNotifier<bool> {
       tweet: tweetMap,
       images: images,
     );
+
     res.fold(
       (l) {
         state = false;

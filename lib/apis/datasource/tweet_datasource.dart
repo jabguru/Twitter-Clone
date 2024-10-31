@@ -116,7 +116,6 @@ class TweetDatasource implements ITweetDatasource {
       requestBody['files'] = images
           .map((File image) => MultipartFile.fromFileSync(image.path))
           .toList();
-      requestBody['file'] = MultipartFile.fromFileSync(images.first.path);
     }
     final formData = FormData.fromMap(requestBody);
 

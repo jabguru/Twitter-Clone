@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:twitter_clone/core/networking/urls.dart';
 
 @immutable
 class UserModel {
@@ -69,8 +70,12 @@ class UserModel {
       name: map['name'] ?? '',
       followers: List<int>.from(map['followers']),
       following: List<int>.from(map['following']),
-      profilePic: map['profilePic'] ?? '',
-      bannerPic: map['bannerPic'] ?? '',
+      profilePic: map['profilePic'] != null && map['profilePic'] != ''
+          ? Endpoints.getImageUrl(map['profilePic'])
+          : '',
+      bannerPic: map['bannerPic'] != null && map['bannerPic'] != ''
+          ? Endpoints.getImageUrl(map['bannerPic'])
+          : '',
       id: map['id'] ?? '',
       bio: map['bio'] ?? '',
       isTwitterBlue: map['isTwitterBlue'] ?? false,
