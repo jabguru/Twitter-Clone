@@ -18,7 +18,6 @@ abstract class ITweetDatasource {
     List<File>? images,
   });
   Future<List<Map<String, dynamic>>> getTweets();
-  // Stream<RealtimeMessage> getLatestTweet();
   Future<void> updateTweet(
     int id, {
     required Map<String, dynamic> data,

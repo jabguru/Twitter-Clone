@@ -20,6 +20,8 @@ class TwitterReplyScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    TextEditingController tweetController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tweet'),
@@ -31,45 +33,35 @@ class TwitterReplyScreen extends ConsumerWidget {
                 data: (tweets) {
                   return ref.watch(getLatestTweetProvider).when(
                         data: (data) {
-                          // final latestTweet = Tweet.fromMap(data.payload);
+                          if (data.isNotEmpty) {
+                            final latestTweet = Tweet.fromMap(data["tweet"]);
 
-                          // bool isTweetAlreadyPresent = false;
-                          // for (final tweetModel in tweets) {
-                          //   if (tweetModel.id == latestTweet.id) {
-                          //     isTweetAlreadyPresent = true;
-                          //     break;
-                          //   }
-                          // }
+                            bool isTweetAlreadyPresent = false;
+                            for (final tweetModel in tweets) {
+                              if (tweetModel.id == latestTweet.id) {
+                                isTweetAlreadyPresent = true;
+                                break;
+                              }
+                            }
 
-                          // if (!isTweetAlreadyPresent &&
-                          //     latestTweet.repliedTo == tweet.id) {
-                          //   if (data.events.contains(
-                          //     'databases.*.collections.${AppwriteConstants.tweetsCollectionId}.documents.*.create',
-                          //   )) {
-                          //     tweets.insert(0, Tweet.fromMap(data.payload));
-                          //   } else if (data.events.contains(
-                          //     'databases.*.collections.${AppwriteConstants.tweetsCollectionId}.documents.*.update',
-                          //   )) {
-                          //     // get id of original tweet
-                          //     final startingPoint =
-                          //         data.events[0].lastIndexOf('documents.');
-                          //     final endPoint =
-                          //         data.events[0].lastIndexOf('.update');
-                          //     final tweetId = data.events[0]
-                          //         .substring(startingPoint + 10, endPoint);
+                            if (!isTweetAlreadyPresent &&
+                                latestTweet.repliedTo == tweet.id) {
+                              if (data["tweetAction"] == "CREATE") {
+                                tweets.insert(0, latestTweet);
+                              } else if (data["tweetAction"] == "UPDATE") {
+                                var tweet = tweets
+                                    .where((element) =>
+                                        element.id == latestTweet.id)
+                                    .first;
 
-                          //     var tweet = tweets
-                          //         .where((element) => element.id == tweetId)
-                          //         .first;
+                                final tweetIndex = tweets.indexOf(tweet);
+                                tweets.removeWhere(
+                                    (element) => element.id == latestTweet.id);
 
-                          //     final tweetIndex = tweets.indexOf(tweet);
-                          //     tweets.removeWhere(
-                          //         (element) => element.id == tweetId);
-
-                          //     tweet = Tweet.fromMap(data.payload);
-                          //     tweets.insert(tweetIndex, tweet);
-                          //   }
-                          // }
+                                tweets.insert(tweetIndex, latestTweet);
+                              }
+                            }
+                          }
 
                           return Expanded(
                             child: ListView.builder(
@@ -105,6 +97,7 @@ class TwitterReplyScreen extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: TextField(
+        controller: tweetController,
         onSubmitted: (value) {
           ref.read(tweetControllerProvider.notifier).shareTweet(
             images: [],
@@ -113,6 +106,7 @@ class TwitterReplyScreen extends ConsumerWidget {
             repliedTo: tweet.id,
             repliedToUserId: tweet.user.id,
           );
+          tweetController.clear();
         },
         decoration: const InputDecoration(
           hintText: 'Tweet your reply',
