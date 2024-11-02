@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:twitter_clone/core/networking/urls.dart';
 
 class CarouselImage extends StatefulWidget {
   final List<String> imageLinks;
@@ -31,7 +32,7 @@ class _CarouselImageState extends State<CarouselImage> {
                     ),
                     margin: const EdgeInsets.all(10),
                     child: Image.network(
-                      link,
+                      Endpoints.getImageUrl(link),
                       fit: BoxFit.contain,
                     ),
                   );

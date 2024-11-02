@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:twitter_clone/core/enums/tweet_type_enum.dart';
-import 'package:twitter_clone/core/networking/urls.dart';
 import 'package:twitter_clone/models/user_model.dart';
 
 @immutable
@@ -101,9 +100,7 @@ class Tweet {
           map['hashtags'] != null ? List<String>.from(map['hashtags']) : [],
       link: map['link'] ?? '',
       imageLinks: map['imageLinks'] != null
-          ? (map['imageLinks'] as List)
-              .map((e) => Endpoints.getImageUrl(e))
-              .toList()
+          ? (map['imageLinks'] as List).map((e) => e.toString()).toList()
           : [],
       user: UserModel.fromMap(map['user']),
       tweetType: (map['tweetType'] as String).toTweetTypeEnum(),

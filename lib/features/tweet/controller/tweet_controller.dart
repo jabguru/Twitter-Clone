@@ -271,7 +271,7 @@ class TweetController extends StateNotifier<bool> {
 
     final res = await _tweetAPI.updateTweet(
       tweet.id,
-      data: {'reshareCount': tweet.reshareCount + 1},
+      data: {'reshareCount': tweet.reshareCount},
     );
     res.fold(
       (l) => showSnackBar(context, getFailureMessage(l)),
