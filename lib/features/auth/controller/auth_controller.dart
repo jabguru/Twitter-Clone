@@ -6,7 +6,6 @@ import 'package:twitter_clone/constants/global_variables.dart';
 import 'package:twitter_clone/core/error/handler.dart';
 import 'package:twitter_clone/core/utils.dart';
 import 'package:twitter_clone/features/auth/view/login_view.dart';
-import 'package:twitter_clone/features/auth/view/signup_view.dart';
 import 'package:twitter_clone/features/home/view/home_view.dart';
 import 'package:twitter_clone/models/user_model.dart';
 
@@ -101,7 +100,7 @@ class AuthController extends StateNotifier<bool> {
     res.fold((l) => null, (r) {
       Navigator.pushAndRemoveUntil(
         context,
-        SignUpView.route(),
+        LoginView.route(),
         (route) => false,
       );
     });

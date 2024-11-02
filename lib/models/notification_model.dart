@@ -46,7 +46,7 @@ class Notification {
     return Notification(
       text: map['text'] ?? '',
       postId: map['postId'] ?? 0,
-      id: map['id'] ?? '',
+      id: map['id'],
       user: UserModel.fromMap(map['user']),
       notificationType:
           (map['notificationType'] as String).toNotificationTypeEnum(),

@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:twitter_clone/apis/app_storage.dart';
+import 'package:twitter_clone/constants/global_variables.dart';
 import 'package:twitter_clone/core/networking/urls.dart';
+import 'package:twitter_clone/features/auth/view/login_view.dart';
 
 class TokenInterceptor extends QueuedInterceptorsWrapper {
   final AppStorage appStorage;
@@ -88,8 +91,13 @@ class TokenInterceptor extends QueuedInterceptorsWrapper {
         return res.data;
       }
     } catch (e) {
-      // TODO: ERROR OCCURS WHEN REFRESH TOKEN HAS EXPIRED. LOG THE USER OUT AND REDIRECT TO LOGIN SCREEN
       log("Error on refresh token: $e");
+      await appStorage.clearStorage();
+      Navigator.pushAndRemoveUntil(
+        GlobalVariables.navigatorKey.currentContext!,
+        LoginView.route(),
+        (route) => false,
+      );
     }
 
     return null;
