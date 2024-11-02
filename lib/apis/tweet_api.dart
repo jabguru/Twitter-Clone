@@ -1,14 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/datasource/tweet_datasource.dart';
 import 'package:twitter_clone/core/core.dart';
 import 'package:twitter_clone/core/error/handler.dart';
+import 'package:twitter_clone/core/networking/urls.dart';
+import 'package:twitter_clone/core/providers.dart';
 import 'package:twitter_clone/models/tweet_model.dart';
+import 'package:web_socket_channel/io.dart';
 
 final tweetAPIProvider = Provider((ref) {
   return TweetAPI(
     tweetDatasource: ref.watch(tweetDatasourceProvider),
+    tweetWebSocket: ref.watch(websocketProvider(Endpoints.tweetWebsocket)),
   );
 });
 
@@ -19,7 +24,7 @@ abstract class ITweetAPI {
     List<File>? images,
   });
   FutureEither<List<Tweet>> getTweets();
-  // Stream<RealtimeMessage> getLatestTweet();
+  Stream<Map<String, dynamic>> getLatestTweet();
   FutureEitherVoid updateTweet(
     int id, {
     required Map<String, dynamic> data,
@@ -32,9 +37,13 @@ abstract class ITweetAPI {
 
 class TweetAPI implements ITweetAPI {
   final TweetDatasource _tweetDatasource;
+  final IOWebSocketChannel _tweetWebSocket;
 
-  TweetAPI({required TweetDatasource tweetDatasource})
-      : _tweetDatasource = tweetDatasource;
+  TweetAPI(
+      {required TweetDatasource tweetDatasource,
+      required IOWebSocketChannel tweetWebSocket})
+      : _tweetDatasource = tweetDatasource,
+        _tweetWebSocket = tweetWebSocket;
 
   @override
   FutureEither<Tweet> shareTweet({
@@ -60,12 +69,12 @@ class TweetAPI implements ITweetAPI {
     });
   }
 
-  // @override
-  // Stream<RealtimeMessage> getLatestTweet() {
-  //   return _realtime.subscribe([
-  //     'databases.${AppwriteConstants.databaseId}.collections.${AppwriteConstants.tweetsCollectionId}.documents'
-  //   ]).stream;
-  // }
+  @override
+  Stream<Map<String, dynamic>> getLatestTweet() {
+    return _tweetWebSocket.stream.map((event) => event == "connected"
+        ? {}
+        : Map<String, dynamic>.from(jsonDecode(event)));
+  }
 
   @override
   FutureEitherVoid updateTweet(

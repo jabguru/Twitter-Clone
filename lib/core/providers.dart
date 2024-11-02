@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:twitter_clone/apis/app_storage.dart';
 import 'package:twitter_clone/core/networking/custom_dio_logger.dart';
 import 'package:twitter_clone/core/networking/token_refresh_interceptor.dart';
+import 'package:web_socket_channel/io.dart';
 
 final storageProvider = Provider((ref) {
   FlutterSecureStorage secureStorage = const FlutterSecureStorage(
@@ -24,4 +25,13 @@ final dioProvider = Provider((ref) {
   );
   dio.interceptors.add(DioLogger());
   return dio;
+});
+
+final websocketProvider = Provider.family((ref, String url) {
+  return IOWebSocketChannel.connect(
+    Uri.parse(url),
+    // headers: {
+    //   "Authorization": "Bearer ${ref.watch(storageProvider).getAccessToken()}",
+    // }
+  );
 });

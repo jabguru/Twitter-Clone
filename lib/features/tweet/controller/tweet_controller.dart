@@ -29,9 +29,7 @@ final getTweetsProvider = FutureProvider((ref) {
 
 final getLatestTweetProvider = StreamProvider((ref) {
   final tweetAPI = ref.watch(tweetAPIProvider);
-  // return tweetAPI.getLatestTweet();
-  // TODO: FIX
-  return Stream.value(null);
+  return tweetAPI.getLatestTweet();
 });
 
 final getRepliesToTweetsProvider = FutureProvider.family((ref, Tweet tweet) {

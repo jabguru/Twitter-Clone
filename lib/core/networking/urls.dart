@@ -2,8 +2,8 @@ import 'dart:io';
 
 class Endpoints {
   static String endpoint =
-      Platform.isAndroid ? 'http://172.20.10.2:8080' : 'http://localhost:8080';
-  static String baseUrl = '$endpoint/api/v1';
+      Platform.isAndroid ? '172.20.10.3:8080' : 'localhost:8080';
+  static String baseUrl = 'http://$endpoint/api/v1';
 
   // ? AUTH
   static String login = '$baseUrl/auth/login';
@@ -18,6 +18,7 @@ class Endpoints {
   // ? TWEETS
   static String tweetBase = '$baseUrl/tweets';
   static String shareTweet = '$tweetBase/share';
+  static String tweetWebsocket = "ws://$endpoint/tweets";
   // ignore: unnecessary_string_interpolations
   static String getTweets = '$tweetBase';
   static String updateTweet(int id) => '$tweetBase/update/$id';
@@ -32,5 +33,6 @@ class Endpoints {
   static String getNotifications(int userId) =>
       '$notificationBase/user/$userId';
 
-  static String getImageUrl(String imageName) => '$endpoint/images/$imageName';
+  static String getImageUrl(String imageName) =>
+      'http://$endpoint/images/$imageName';
 }
