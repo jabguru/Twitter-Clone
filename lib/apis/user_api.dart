@@ -1,16 +1,21 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:twitter_clone/apis/datasource/user_datasource.dart';
 import 'package:twitter_clone/core/core.dart';
 import 'package:twitter_clone/core/error/handler.dart';
+import 'package:twitter_clone/core/networking/urls.dart';
+import 'package:twitter_clone/core/providers.dart';
 import 'package:twitter_clone/models/user_model.dart';
+import 'package:web_socket_channel/io.dart';
 
 final userAPIProvider = Provider(
   (ref) {
     final userDatasource = ref.watch(userDatasourceProvider);
     return UserAPI(
       userDatasource: userDatasource,
+      userWebSocket: ref.watch(websocketProvider(Endpoints.userWebsocket)),
     );
   },
 );
@@ -24,15 +29,18 @@ abstract class IUserAPI {
   });
   FutureEither<UserModel> getUserData(int id);
   FutureEither<List<UserModel>> searchUserByName(String name);
-  // Stream<RealtimeMessage> getLatestUserProfileData();
+  Stream<Map<String, dynamic>> getLatestUserProfileData();
 }
 
 class UserAPI implements IUserAPI {
   final UserDatasource _userDatasource;
+  final IOWebSocketChannel _userWebSocket;
 
   UserAPI({
     required UserDatasource userDatasource,
-  }) : _userDatasource = userDatasource;
+    required IOWebSocketChannel userWebSocket,
+  })  : _userDatasource = userDatasource,
+        _userWebSocket = userWebSocket;
 
   @override
   FutureEither<UserModel> getUserData(int id) async {
@@ -40,6 +48,13 @@ class UserAPI implements IUserAPI {
       Map<String, dynamic> userMap = await _userDatasource.getUserData(id);
       return UserModel.fromMap(userMap);
     });
+  }
+
+  @override
+  Stream<Map<String, dynamic>> getLatestUserProfileData() {
+    return _userWebSocket.stream.map((event) => event == "connected"
+        ? {}
+        : Map<String, dynamic>.from(jsonDecode(event)));
   }
 
   @override

@@ -14,6 +14,7 @@ class Endpoints {
   static String updateUser(int id) => '$baseUrl/users/update/$id';
   static String getUser(int id) => '$baseUrl/users/$id';
   static String searchUsers = '$baseUrl/users/search';
+  static String userWebsocket = "ws://$endpoint/user";
 
   // ? TWEETS
   static String tweetBase = '$baseUrl/tweets';

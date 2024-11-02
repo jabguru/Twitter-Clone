@@ -30,9 +30,7 @@ final getUserTweetsProvider = FutureProvider.family((ref, int uid) async {
 
 final getLatestUserProfileDataProvider = StreamProvider((ref) {
   final userAPI = ref.watch(userAPIProvider);
-  // return userAPI.getLatestUserProfileData();
-  // TODO: FIX
-  return Stream.value(null);
+  return userAPI.getLatestUserProfileData();
 });
 
 class UserProfileController extends StateNotifier<bool> {

@@ -24,11 +24,9 @@ class UserProfileView extends ConsumerWidget {
     return Scaffold(
       body: ref.watch(getLatestUserProfileDataProvider).when(
             data: (data) {
-              // if (data.events.contains(
-              //   'databases.*.collections.${AppwriteConstants.usersCollectionId}.documents.${copyOfUser.uid}.update',
-              // )) {
-              //   copyOfUser = UserModel.fromMap(data.payload);
-              // }
+              if (data.isNotEmpty) {
+                copyOfUser = UserModel.fromMap(data);
+              }
               return UserProfile(user: copyOfUser);
             },
             error: (error, st) => ErrorText(
