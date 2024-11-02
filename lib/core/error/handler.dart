@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -21,7 +22,7 @@ Future<Either<Failure, T>> handleError<T>(Future<T> Function() process) async {
     }
     return left(ServerFailure());
   } on Exception catch (e) {
-    print("Exception: $e");
+    log("Exception: $e");
     return left(ServerFailure());
   }
 }

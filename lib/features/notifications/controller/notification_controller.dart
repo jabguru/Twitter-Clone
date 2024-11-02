@@ -15,9 +15,7 @@ final notificationControllerProvider =
 
 final getLatestNotificationProvider = StreamProvider((ref) {
   final notificationAPI = ref.watch(notificationAPIProvider);
-  // return notificationAPI.getLatestNotification();
-  // TODO: FIX
-  return Stream.value(null);
+  return notificationAPI.getLatestNotification();
 });
 
 final getNotificationsProvider = FutureProvider.family((ref, int uid) async {

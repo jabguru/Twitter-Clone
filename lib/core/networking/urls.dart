@@ -33,6 +33,7 @@ class Endpoints {
   static String createNotification = '$notificationBase/create';
   static String getNotifications(int userId) =>
       '$notificationBase/user/$userId';
+  static String notificationWebsocket = "ws://$endpoint/notifications";
 
   static String getImageUrl(String imageName) =>
       'http://$endpoint/images/$imageName';

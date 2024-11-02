@@ -45,7 +45,7 @@ class Notification {
   factory Notification.fromMap(Map<String, dynamic> map) {
     return Notification(
       text: map['text'] ?? '',
-      postId: map['postId'] ?? '',
+      postId: map['postId'] ?? 0,
       id: map['id'] ?? '',
       user: UserModel.fromMap(map['user']),
       notificationType:

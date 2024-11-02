@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:synchronized/synchronized.dart';
@@ -88,7 +89,7 @@ class TokenInterceptor extends QueuedInterceptorsWrapper {
       }
     } catch (e) {
       // TODO: ERROR OCCURS WHEN REFRESH TOKEN HAS EXPIRED. LOG THE USER OUT AND REDIRECT TO LOGIN SCREEN
-      print("Error on refresh token: $e");
+      log("Error on refresh token: $e");
     }
 
     return null;

@@ -4,6 +4,7 @@ import 'package:twitter_clone/common/common.dart';
 import 'package:twitter_clone/features/auth/controller/auth_controller.dart';
 import 'package:twitter_clone/features/notifications/controller/notification_controller.dart';
 import 'package:twitter_clone/features/notifications/widget/notification_tile.dart';
+import 'package:twitter_clone/models/notification_model.dart' as model;
 
 class NotificationView extends ConsumerWidget {
   const NotificationView({super.key});
@@ -23,52 +24,41 @@ class NotificationView extends ConsumerWidget {
                   ref.invalidate(getNotificationsProvider(currentUser.id)),
               child: ref.watch(getNotificationsProvider(currentUser.id)).when(
                     data: (notifications) {
-                      return ListView.builder(
-                        itemCount: notifications.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final notification = notifications[index];
-                          return NotificationTile(
-                            notification: notification,
-                          );
-                        },
-                      );
-                      // return ref.watch(getLatestNotificationProvider).when(
-                      //       data: (data) {
-                      //         // if (data.events.contains(
-                      //         //   'databases.*.collections.${AppwriteConstants.notificationsCollectionId}.documents.*.create',
-                      //         // )) {
-                      //         //   final latestNotif =
-                      //         //       model.Notification.fromMap(data.payload);
-                      //         //   if (latestNotif.uid == currentUser.uid) {
-                      //         //     notifications.insert(0, latestNotif);
-                      //         //   }
-                      //         // }
+                      return ref.watch(getLatestNotificationProvider).when(
+                            data: (data) {
+                              if (data.isNotEmpty) {
+                                final latestNotif =
+                                    model.Notification.fromMap(data);
+                                if (latestNotif.user.id == currentUser.id) {
+                                  notifications.insert(0, latestNotif);
+                                }
+                              }
 
-                      //         return ListView.builder(
-                      //           itemCount: notifications.length,
-                      //           itemBuilder: (BuildContext context, int index) {
-                      //             final notification = notifications[index];
-                      //             return NotificationTile(
-                      //               notification: notification,
-                      //             );
-                      //           },
-                      //         );
-                      //       },
-                      //       error: (error, stackTrace) => ErrorText(
-                      //         error: error.toString(),
-                      //       ),
-                      //       loading: () {
-                      //         return ListView.builder(
-                      //           itemCount: notifications.length,
-                      //           itemBuilder: (BuildContext context, int index) {
-                      //             final notification = notifications[index];
-                      //             return NotificationTile(
-                      //               notification: notification,
-                      //             );
-                      //           },
-                      //         );
-                      //       },
-                      //     );
+                              return ListView.builder(
+                                itemCount: notifications.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final notification = notifications[index];
+                                  return NotificationTile(
+                                    notification: notification,
+                                  );
+                                },
+                              );
+                            },
+                            error: (error, stackTrace) => ErrorText(
+                              error: error.toString(),
+                            ),
+                            loading: () {
+                              return ListView.builder(
+                                itemCount: notifications.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final notification = notifications[index];
+                                  return NotificationTile(
+                                    notification: notification,
+                                  );
+                                },
+                              );
+                            },
+                          );
                     },
                     error: (error, stackTrace) => ErrorText(
                       error: error.toString(),
